@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuyBuddy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="text-center">BuyBuddy</h1>
+
+    <div class="row">
+        <!-- Listenbereich -->
+        <div class="col-lg-3" id="list-view">
+            <h4>Listenübersicht</h4>
+            <div id="list-container" class="list-group"></div>
+            <button class="btn btn-secondary mt-3" id="add-list">Neue Liste erstellen</button>
+            <button class="btn btn-warning mt-3" id="add-article-entry" data-bs-toggle="modal" data-bs-target="#articleEntryModal">Neuen Artikeleintrag hinzufügen</button>
+        </div>
+
+        <div class="col-lg-9" id="detail-view">
+            <h4>Details zur Liste</h4>
+            <!-- Hier wird die data-currentListId gesetzt -->
+            <div id="detail-container" data-currentListId="1"></div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<!-- Modal für die Artikelübersicht -->
+<div class="modal fade" id="articleModal" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="articleModalLabel">
+                    <i class="bi bi-bag-plus"></i> Artikelübersicht
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-container">
+                <ul id="articleList" class="list-group"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addToListBtn">Zur Liste hinzufügen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal um Artikel hinzuzufgen -->
+<div class="modal fade" id="articleEntryModal" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle"></i> Neuen Artikel hinzufügen
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-content">
+                <label for="articleEntryName">Name</label>
+                <input type="text" id="articleEntryName"/>
+                <label for="articleEntryTag">Tag</label>
+                <input type="text" id="articleEntryTag"/>
+                <label for="articleEntryDescription">Beschreibung</label>
+                <input type="text" id="articleEntryDescription"/>
+                <label for="articleEntryImage">Bild</label>
+                <input type="file" id="articleEntryImage"/>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addArticleEntry">Eintrag hinzufügen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Bootstrap JS (inkl. Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

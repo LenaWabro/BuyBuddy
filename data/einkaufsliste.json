@@ -1,0 +1,51 @@
+{
+  "lists": [
+    {
+      "id": 1,
+      "name": "Einkauf",
+      "items": [
+        { "id": 101, "quantity": 2 },
+        { "id": 102, "quantity": 5 }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Grillparty",
+      "items": [
+        {"id": 104, "quantity": 2}
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": 101,
+      "title": "Apfel",
+      "description": "Frischer roter Apfel aus regionalem Anbau.",
+      "image": "./img/apfel.jpeg",
+      "tag": "Obst"
+    },
+    {
+      "id": 102,
+      "title": "Milch",
+      "description": "1 Liter fettarme Milch, haltbar.",
+      "image": "./img/milch.jpeg",
+      "tag": "Milchprodukte"
+    },
+    {
+      "id": 103,
+      "title": "Brot",
+      "description": "Steinofenbrot vom Bäcker, 1Kg",
+      "image": "./img/Brot.jpg",
+      "tag": "Backware"
+    },
+    {
+      "id": 104,
+      "title": "Grillkäse",
+      "description": "Grill- und Bratkäse Natur, 4 Stück",
+      "image": "./img/Grillkäse.jpg",
+      "tag": "Milchprodukte"
+
+
+    }
+  ]
+}
