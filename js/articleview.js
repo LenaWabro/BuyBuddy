@@ -13,11 +13,28 @@ export class ArtikelView {
             const li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `
-            <input type="checkbox" value="${item.id}" class="form-check-input me-2">
-            <img src="${item.image}" alt="${item.title}" style="width: 50px; height: 50px; object-fit: cover;" class="me-2">
-            <span>${item.tag} - ${item.title} - ${item.description}</span>
-            <input type="number" value="1" min="1" id="quantity-${item.id}" class="form-control ms-3" style="width: 60px;">
-        `;
+    <div class="me-2">
+        <input type="checkbox" value="${item.id}" id="item-${item.id}">
+    </div>
+    
+    <img src="${item.image}" alt="${item.title}" 
+         class="img-thumbnail me-2" 
+         style="max-width: 70px; max-height: 70px;">
+
+    <div class="flex-grow-1">
+        <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
+        <div class="text-muted">${item.description}</div>
+        <small class="text-muted">${item.tag}</small>
+    </div>
+    
+    <div class="ms-3">
+        <input type="number" id="quantity-${item.id}" 
+               value="1" min="1" 
+               class="form-control form-control-sm" 
+               style="width:60px;">
+    </div>
+`;
+
             this.articleList.appendChild(li);
 
             // Event-Listener für das Abhaken der Artikel
@@ -33,5 +50,7 @@ export class ArtikelView {
             });
 
         });
+
+
     }
 }
