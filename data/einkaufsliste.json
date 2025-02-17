@@ -29,7 +29,7 @@
       "title": "Milch",
       "description": "1 Liter fettarme Milch, haltbar.",
       "image": "./img/milch.jpeg",
-      "tag": "Milchprodukte"
+      "tag": "Milchprodukt"
     },
     {
       "id": 103,
@@ -43,7 +43,7 @@
       "title": "Grillkäse",
       "description": "Grill- und Bratkäse Natur, 4 Stück",
       "image": "./img/Grillkäse.jpg",
-      "tag": "Milchprodukte"
+      "tag": "Milchprodukt"
 
 
     }
