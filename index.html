@@ -76,13 +76,25 @@
             <div class="modal-content">
                 <label for="articleEntryName">Name</label>
                 <input type="text" id="articleEntryName"/>
+
                 <label for="articleEntryTag">Tag</label>
-                <input type="text" id="articleEntryTag"/>
+                <select id="articleEntryTag" class="form-select">
+                    <!-- Hier kommen später die Tags aus der Artikelübersicht -->
+                    <option value="">Wähle einen Tag</option>
+                    <option value="Obst">Obst</option>
+                    <option value="Gemüse">Gemüse</option>
+                    <option value="Milchprodukt">Milchprodukte</option>
+                    <option value="Backware">Backwaren</option>
+                </select>
+
                 <label for="articleEntryDescription">Beschreibung</label>
                 <input type="text" id="articleEntryDescription"/>
-                <label for="articleEntryImage">Bild</label>
-                <input type="file" id="articleEntryImage"/>
 
+                <label for="articleEntryImage">Bild</label>
+                <input type="text" id="articleEntryImage" placeholder="Gib die URL des Bildes ein"/>
+
+                <!-- Um das Bild anzuzeigen -->
+                <img id="articleImagePreview" src="" alt="Bildvorschau" style="max-width: 100px; max-height: 100px; display: none;" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
