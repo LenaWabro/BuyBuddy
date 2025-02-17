@@ -42,6 +42,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modal-container">
+                <div class="mb-3">
+                    <label for="newProductTag" class="form-label">Wähle einen Tag aus, um dein gewünschtes Produkt zu suchen</label>
+                    <select class="form-select" id="newProductTag" required>
+                        <option value="">Alle anzeigen</option>
+                        <option value="Obst">Obst</option>
+                        <option value="Gemüse">Gemüse</option>
+                        <option value="Milchprodukt">Milchprodukte</option>
+                        <option value="Backware">Backwaren</option>
+
+                    </select>
+                </div>
                 <ul id="articleList" class="list-group"></ul>
             </div>
             <div class="modal-footer">
