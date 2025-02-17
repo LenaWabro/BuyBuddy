@@ -3,31 +3,34 @@ export class ArtikelController {
         this.model = model;
         this.artikelView = artikelView;
         this.listView = listView;
-        this.setupModalEvents();
-        this.setupModalEventsForNewArticle();
-
+        this.selectedItems = {}; // Speichert die ausgewählten Artikel (ID: Menge)
+        this.setupModalEvents(); // Initialisiert alle Events für das Artikelmodal
+        this.setupModalEventsForNewArticle(); // Initialisiert die Events für das Modal zur Neuanlage eines Artikels
     }
 
+    /**
+     * setupModalEventsForNewArticle()
+     * Konfiguriert die Events für das Modal, in dem neue Artikel angelegt werden.
+     */
     setupModalEventsForNewArticle() {
         const modal = document.getElementById("articleEntryModal");
         if (!modal) return;
 
-        // Fokus nach dem Öffnen des Modals setzen
+        // Fokus auf den ersten Button setzen, wenn das Modal angezeigt wird
         modal.addEventListener("shown.bs.modal", () => {
-            modal.querySelector("button").focus();  // Hier kannst du das gewünschte Element fokussieren
+            modal.querySelector("button").focus();
         });
 
-        // Fokus zurücksetzen nach Schließen des Modals
+        // Eingabefelder zurücksetzen, wenn das Modal geschlossen wird
         modal.addEventListener("hidden.bs.modal", () => {
             document.getElementById("add-article-entry").focus();
-
             document.getElementById("articleEntryName").value = "";
             document.getElementById("articleEntryTag").value = "";
             document.getElementById("articleEntryDescription").value = "";
             document.getElementById("articleEntryImage").value = "";
         });
 
-
+        // Klick-Event für den "Eintrag hinzufügen"-Button
         const addBtn = document.getElementById("addArticleEntry");
         if (addBtn) {
             addBtn.addEventListener("click", () => {
@@ -36,106 +39,192 @@ export class ArtikelController {
                 const descriptionInput = document.getElementById("articleEntryDescription").value;
                 const imageInput = document.getElementById("articleEntryImage").value;
 
-                // Überprüfe, ob Artikel ausgewählt wurden
+                // Validierung der Eingabefelder
                 if (nameInput.length === 0 || tagInput.length === 0 || descriptionInput.length === 0) {
                     alert("Bitte gib einen Namen und einen Tag an.");
                     return;
                 }
-                console.log(tagInput, nameInput, descriptionInput, imageInput);
+
+                // Neuen Artikel erstellen
                 const newArticle = {
-                    "id": Date.now(),
-                    "title": nameInput,
-                    "description": descriptionInput,
-                    "image": imageInput,
-                    "tag": tagInput
+                    id: Date.now(),
+                    title: nameInput,
+                    description: descriptionInput,
+                    image: imageInput,
+                    tag: tagInput
                 };
-                console.log(this.model.items);
+
+                // Artikel zum Modell hinzufügen
                 this.model.items.push(newArticle);
-                console.log(this.model.items);
+                // Event auslösen, um die Daten zu aktualisieren
                 document.dispatchEvent(new Event("dataLoaded"));
             });
         }
     }
+
+    /**
+     * setupModalEvents()
+     * Konfiguriert die Events für das Modal, in dem Artikel zu einer Liste hinzugefügt werden.
+     */
     setupModalEvents() {
         const modal = document.getElementById("articleModal");
         if (!modal) return;
 
-        // Fokus nach dem Öffnen des Modals setzen
+        // Fokus setzen, wenn das Modal angezeigt wird
         modal.addEventListener("shown.bs.modal", () => {
-            modal.querySelector("button").focus();  // Hier kannst du das gewünschte Element fokussieren
+            modal.querySelector("button").focus();
         });
 
-        // Fokus zurücksetzen nach Schließen des Modals
+        // Wenn das Modal geschlossen wird, alle Eingaben zurücksetzen
         modal.addEventListener("hidden.bs.modal", () => {
             document.getElementById("add-list").focus();
 
+            // Alle Checkboxen deaktivieren
             modal.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            // Alle Mengenfelder auf "1" zurücksetzen
             modal.querySelectorAll('input[type="number"]').forEach(input => input.value = "1");
 
+            // Tag-Filter zurücksetzen
+            const tagSelect = modal.querySelector('#newProductTag');
+            if (tagSelect) {
+                tagSelect.value = '';
+            }
+
+            // WICHTIG: Zuerst die gespeicherte Auswahl leeren, bevor die Liste neu gerendert wird
+            this.selectedItems = {};
+
+            // Erneut rendern – jetzt sind alle Mengen auf Standard (1)
+            this.filterArticlesByTag('');
         });
 
+        // Klick-Event für den Button "Zur Liste hinzufügen"
         const addToListBtn = document.getElementById("addToListBtn");
         if (addToListBtn) {
             addToListBtn.addEventListener("click", () => {
-                // Alle ausgewählten Artikel und deren Mengen erfassen
                 const checkboxes = modal.querySelectorAll('input[type="checkbox"]:checked');
                 const selectedItems = [];
 
+                // Für jeden ausgewählten Artikel Menge ermitteln
                 checkboxes.forEach(cb => {
                     const itemId = parseInt(cb.value);
                     const quantityInput = modal.querySelector(`#quantity-${itemId}`);
                     const quantity = parseInt(quantityInput.value);
 
                     if (!isNaN(quantity) && quantity > 0) {
-                        selectedItems.push({id: itemId, quantity});
+                        selectedItems.push({ id: itemId, quantity });
                     }
                 });
 
-                console.log("Ausgewählte Artikel mit Mengen:", selectedItems);
-
-                // Überprüfe, ob Artikel ausgewählt wurden
                 if (selectedItems.length === 0) {
                     alert("Bitte wählen Sie Artikel aus und geben Sie eine Menge an.");
                     return;
                 }
 
-                // Hole die aktuelle ListId aus dem Detailbereich
                 const detailContainer = document.getElementById("detail-container");
                 const listId = parseInt(detailContainer.dataset.currentlistid);
-                console.log("Aktuelle ListId:", listId);
-
-                // Prüfe, ob die ListId existiert
                 const list = this.model.lists.find(l => l.id === listId);
+
                 if (!list) {
-                    console.log("Liste nicht gefunden. Available lists:", this.model.lists);
                     alert("Liste nicht gefunden.");
                     return;
                 }
 
-                // Füge die ausgewählten Artikel zur Liste hinzu oder erhöhe die Menge
+                // Artikel der Liste hinzufügen oder vorhandene Mengen erhöhen
                 selectedItems.forEach(item => {
                     const existingItem = list.items.find(i => i.id === item.id);
                     if (existingItem) {
-                        existingItem.quantity += item.quantity;  // Menge erhöhen, falls der Artikel schon in der Liste ist
+                        existingItem.quantity += item.quantity;
                     } else {
                         const newItem = this.model.items.find(i => i.id === item.id);
                         if (newItem) {
-                            list.items.push({...newItem, quantity: item.quantity, checked: false});
+                            list.items.push({ ...newItem, quantity: item.quantity, checked: false });
                         }
                     }
                 });
 
-                // Aktualisiere die Anzeige der Liste
+                // Aktualisierte Liste anzeigen
                 this.listView.showListDetails(list, this.model.items);
-
-                // Schließe das Modal nach dem Hinzufügen
-                //const bootstrapModal = new bootstrap.Modal(modal);
-                //bootstrapModal.hide();
             });
-
-
         }
 
+        // Event für das Dropdown zum Filtern nach Tag
+        const tagSelect = modal.querySelector('#newProductTag');
+        if (tagSelect) {
+            tagSelect.addEventListener('change', (event) => {
+                this.filterArticlesByTag(event.target.value);
+            });
+        }
+
+        /**
+         * filterArticlesByTag(tag)
+         * Rendert die Artikelliste basierend auf dem gewählten Tag.
+         */
+        this.filterArticlesByTag = (tag) => {
+            const articleList = modal.querySelector('#articleList');
+            articleList.innerHTML = ''; // Alte Inhalte löschen
+
+            // Artikel filtern (wenn kein Tag, dann alle anzeigen)
+            const filteredItems = this.model.items.filter(item => !tag || item.tag === tag);
+
+            filteredItems.forEach(item => {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item', 'd-flex', 'align-items-center');
+
+                // Wird hier anhand von selectedItems entweder der gespeicherte Wert oder 1 verwendet
+                const currentQuantity = this.selectedItems[item.id] || 1;
+                const isChecked = !!this.selectedItems[item.id];
+
+                li.innerHTML = `
+                    <div class="me-2">
+                        <input type="checkbox" value="${item.id}" id="item-${item.id}"
+                            ${isChecked ? 'checked' : ''}>
+                    </div>
+                    <img src="${item.image}" alt="${item.title}"
+                         class="img-thumbnail me-2"
+                         style="max-width: 70px; max-height: 70px;">
+                    <div class="flex-grow-1">
+                        <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
+                        <div class="text-muted">${item.description}</div>
+                        <small class="text-muted">${item.tag}</small>
+                    </div>
+                    <div class="ms-3">
+                        <input type="number" id="quantity-${item.id}"
+                               value="${currentQuantity}" min="1"
+                               class="form-control form-control-sm"
+                               style="width:60px;">
+                    </div>
+                `;
+                articleList.appendChild(li);
+
+                // Event, um die Menge zu speichern, wenn sie geändert wird
+                const quantityInput = modal.querySelector(`#quantity-${item.id}`);
+                quantityInput.addEventListener('change', (event) => {
+                    this.selectedItems[item.id] = parseInt(event.target.value);
+                });
+
+                // Event, um den Checkbox-Status zu speichern
+                const checkbox = modal.querySelector(`#item-${item.id}`);
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        this.selectedItems[item.id] = parseInt(quantityInput.value);
+                    } else {
+                        delete this.selectedItems[item.id];
+                    }
+                });
+            });
+        };
     }
 
+    /**
+     * restoreSelectedItems(modal)
+     * Stellt sicher, dass die Checkboxen den ausgewählten Artikeln entsprechen.
+     * (Wird hier nicht mehr verwendet, da beim Schließen das Modal vollständig zurückgesetzt wird.)
+     */
+    restoreSelectedItems(modal) {
+        const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            const itemId = parseInt(cb.value);
+            cb.checked = !!this.selectedItems[itemId];
+        });
+    }
 }
