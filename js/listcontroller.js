@@ -1,4 +1,3 @@
-// listcontroller.js
 export class ListController {
     constructor(model, listView) {
         this.model = model;
@@ -7,21 +6,40 @@ export class ListController {
     }
 
     setupListEvents() {
-        // Neuer Listen-Button:
+        // Neuer Listen-Button: Modal öffnen
         const addListBtn = document.getElementById("add-list");
         if (addListBtn) {
             addListBtn.addEventListener("click", () => {
-                const name = prompt("Name der neuen Liste:");
+                const modal = new bootstrap.Modal(document.getElementById("addListModal"));
+                modal.show();
+            });
+        }
+
+        // Beim Klick auf „Erstellen“
+        const createListBtn = document.getElementById("createList");
+        if (createListBtn) {
+            createListBtn.addEventListener("click", () => {
+                const nameInput = document.getElementById("newListName");
+                const name = nameInput.value.trim();
+
                 if (name) {
                     const newList = {
                         id: Date.now(),
                         name,
                         active: true,
                         items: [],
-                        completed: false  // optional: gleich mitführen
+                        completed: false
                     };
+
                     this.model.lists.push(newList);
                     this.listView.renderLists(this.model.lists);
+
+                    // Eingabe leeren & Modal schließen
+                    nameInput.value = "";
+                    document.getElementById("addListModal").classList.remove("show");
+                    document.getElementById("addListModal").setAttribute("aria-hidden", "true");
+                    document.body.classList.remove("modal-open");
+                    document.querySelector(".modal-backdrop").remove();
                 }
             });
         }
@@ -39,7 +57,6 @@ export class ListController {
 
                     if (list) {
                         list.completed = target.checked;
-                        // Auch alle Artikel in der Liste auf den gleichen Status setzen
                         list.items.forEach(itemRef => itemRef.checked = list.completed);
                     }
 
@@ -52,11 +69,13 @@ export class ListController {
                 const deleteBtn = target.closest('.delete-list');
                 if (deleteBtn) {
                     const id = parseInt(deleteBtn.dataset.id);
-                    if (confirm("Bist du sicher, dass du diese Liste löschen möchtest?")) {
-                        this.model.lists = this.model.lists.filter(list => list.id !== id);
-                        this.listView.renderLists(this.model.lists);
-                    }
-                    return;
+                    document.getElementById("deleteListId").value = id;  // Setze die ID in das versteckte Eingabefeld
+
+                    // Hole das Modal-Element und zeige es an
+                    const deleteModalElement = document.getElementById("deleteListModal");
+                    const deleteModal = new bootstrap.Modal(deleteModalElement);
+
+                    deleteModal.show();
                 }
 
                 // 3) Liste bearbeiten:
@@ -64,46 +83,69 @@ export class ListController {
                 if (editBtn) {
                     const id = parseInt(editBtn.dataset.id);
                     const list = this.model.lists.find(list => list.id === id);
-                    const newName = prompt("Neuen Namen der Liste eingeben:", list.name);
-                    if (newName && newName.trim() !== "") {
-                        list.name = newName.trim();
-                        this.listView.renderLists(this.model.lists);
-                    }
-                    return;
-                }
 
-                // 4) Neuen Artikel hinzufügen
-                const addItemBtn = target.closest('.add-item');
-                if (addItemBtn) {
-                    const id = parseInt(addItemBtn.dataset.id);
-                    const list = this.model.lists.find(list => list.id === id);
+                    // Füllen des Modals mit den aktuellen Listendaten
+                    const modal = new bootstrap.Modal(document.getElementById('editListModal'));
+                    document.getElementById('editListId').value = list.id;  // ID speichern
+                    document.getElementById('editListName').value = list.name;  // aktuellen Namen eintragen
 
-                    if (list) {
-                        const itemName = prompt("Name des neuen Artikels:");
-                        if (itemName && itemName.trim() !== "") {
-                            // Artikel hinzufügen
-                            list.items.push({
-                                id: Date.now(),
-                                name: itemName.trim(),
-                                checked: false
-                            });
-                            // Liste auf "in Bearbeitung" setzen
-                            list.completed = false;
-                            // Neu rendern
+                    // Modal anzeigen
+                    modal.show();
+
+                    // Event für den "Speichern"-Button
+                    const saveBtn = document.getElementById('saveEditList');
+                    saveBtn.onclick = () => {
+                        const newName = document.getElementById('editListName').value.trim();
+
+                        if (newName !== "") {
+                            // Listenname aktualisieren
+                            list.name = newName;
+
+                            // Liste rendern
                             this.listView.renderLists(this.model.lists);
-                            this.listView.showListDetails(list, this.model.items);
+
+                            // Modal schließen
+                            modal.hide();
+                        } else {
+                            alert("Bitte einen gültigen Namen eingeben.");
                         }
-                    }
-                    return;
+                    };
                 }
+
+
+
 
                 // 5) Klick auf einen Listeneintrag (Liste öffnen):
-                if (target.dataset.id) {
-                    const id = parseInt(target.dataset.id);
+                if (event.target.dataset.id) {
+                    const id = parseInt(event.target.dataset.id);
                     const list = this.model.lists.find(list => list.id === id);
                     this.listView.showListDetails(list, this.model.items);
                 }
             });
+
+            // Löschen der Liste bestätigen
+            const confirmDeleteListBtn = document.getElementById("confirmDeleteList");
+            if (confirmDeleteListBtn) {
+                confirmDeleteListBtn.addEventListener("click", () => {
+                    const listId = parseInt(document.getElementById("deleteListId").value);
+
+                    // Liste aus dem Modell löschen
+                    this.model.lists = this.model.lists.filter(list => list.id !== listId);
+
+                    // Listenansicht neu rendern
+                    this.listView.renderLists(this.model.lists);
+
+
+
+                    // Optional: Entfernen des Modals aus dem DOM, um eine saubere Anzeige zu gewährleisten
+                    document.getElementById("deleteListModal").classList.remove("show");
+                    document.getElementById("deleteListModal").setAttribute("aria-hidden", "true");
+                    document.body.classList.remove("modal-open");
+                    const backdrop = document.querySelector(".modal-backdrop");
+                    if (backdrop) backdrop.remove();
+                });
+            }
+
         }
     }
 }

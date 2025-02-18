@@ -138,6 +138,20 @@ h4 {
 }
 
 
+.edit {
+        background-color: #ffc107; /* Warnfarbe von Bootstrap */
+}
+
+.delete{
+    background-color: #dc3545;
+    color: white;
+}
+
+
+
+
+
+
 
 
 
@@ -147,4 +161,35 @@ h4 {
     color: white !important;
     padding: 16px
 }
+
+
+/* Styling für den Absatz "Gewünschter Artikel nicht gefunden?" */
+.modal-footer a {
+    color: #007bff; /* Blaue Schriftfarbe */
+    font-size: 14px; /* Schriftgröße */
+    text-decoration: none; /* Kein Unterstrich */
+    margin-right: 10px; /* Abstand zum nächsten Element */
+}
+
+.modal-footer a:hover {
+    text-decoration: underline; /* Unterstrich bei Hover */
+    color: #0056b3; /* Dunkleres Blau bei Hover */
+}
+
+/* Styling für den Button "Neuen Artikeleintrag erstellen" */
+#add-article-entry {
+    background-color: #f8f9fa; /* Heller Hintergrund */
+    color: #007bff; /* Blaue Schriftfarbe */
+    border: 2px solid #007bff; /* Blaues Border */
+    padding: 8px 16px; /* Polsterung */
+    border-radius: 5px; /* Abgerundete Ecken */
+    font-size: 14px; /* Schriftgröße */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Weicher Übergang */
+}
+
+#add-article-entry:hover {
+    background-color: #007bff; /* Hintergrundfarbe beim Hover */
+    color: white; /* Weiße Schriftfarbe beim Hover */
+}
+
 

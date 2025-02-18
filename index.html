@@ -17,8 +17,9 @@
         <div class="col-lg-3" id="list-view">
             <h4>Listenübersicht</h4>
             <div id="list-container" class="list-group"></div>
-            <button class="btn btn-secondary mt-3" id="add-list">Neue Liste erstellen</button>
-            <button class="btn btn-warning mt-3" id="add-article-entry" data-bs-toggle="modal" data-bs-target="#articleEntryModal">Neuen Artikeleintrag hinzufügen</button>
+            <button class="btn btn-outline-primary" id="add-list">Neue Liste erstellen</button>
+
+
         </div>
 
         <div class="col-lg-9" id="detail-view">
@@ -29,7 +30,7 @@
 
     </div>
 </div>
-</div>
+
 
 <!-- Modal für die Artikelübersicht -->
 <div class="modal fade" id="articleModal" tabindex="-1" aria-hidden="false">
@@ -58,6 +59,9 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addToListBtn">Zur Liste hinzufügen</button>
+
+                <a>Gewünscher Artikel nicht gefunden?</a>
+                <button class="btn btn-outline-primary" id="add-article-entry" data-bs-toggle="modal" data-bs-target="#articleEntryModal">Neuen Artikeleintrag erstellen</button>
             </div>
         </div>
     </div>
@@ -85,6 +89,7 @@
                     <option value="Gemüse">Gemüse</option>
                     <option value="Milchprodukt">Milchprodukte</option>
                     <option value="Backware">Backwaren</option>
+                    <option value="neuerTag">Neuen Tag erstellen</option>
                 </select>
 
                 <label for="articleEntryDescription">Beschreibung</label>
@@ -106,11 +111,106 @@
 
 
 
+<!-- Modal zum Löschen einer Liste -->
+<div class="modal fade" id="deleteListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header delete">
+                <h5 class="modal-title">Liste löschen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bist du sicher, dass du diese Liste löschen möchtest?</p>
+                <input type="hidden" id="deleteListId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteList">Löschen</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Bootstrap JS (inkl. Popper.js) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+
+<!-- Modal zum Bearbeiten einer Liste -->
+<div class="modal fade" id="editListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header edit">
+                <h5 class="modal-title">Liste umbenennen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editListId">
+                <label for="editListName">Namen ändern:</label>
+                <input type="text" id="editListName" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-warning" id="saveEditList">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal zum Erstellen einer neuen Liste -->
+<div class="modal fade" id="addListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Neue Liste erstellen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="newListName">Listenname:</label>
+                <input type="text" id="newListName" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-success" id="createList">Erstellen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal zum Teilen einer Liste -->
+<div class="modal fade" id="shareListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Liste teilen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Möchtest du diese Liste wirklich teilen?</p>
+                <input type="hidden" id="shareListId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="confirmShareList" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Bootstrap JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+
 
 <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
