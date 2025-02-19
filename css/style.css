@@ -1,110 +1,161 @@
 /* ========== Variablen für wiederkehrende Farben ========== */
 :root {
-    --primary-blue: #007bff;
-    --dark-blue: #0056b3;
+    --top-blue: #5e90d6;
     --light-gray: #f4f7fa;
-    --dark-gray: #495057;
     --border-gray: #ddd;
-    --completed-item: darkred;
+    --bootstrap-red: #dc3545;
 }
+
+/* Styling für das Haupt-Element */
+/* Standard: Start-Screen mit 100vh für größere Bildschirme */
+.start {
+    background-color: var(--top-blue);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Stapelt Elemente vertikal */
+    justify-content: center;
+    align-items: center;
+    font-size: 45px;
+    color: white;
+    position: relative;
+    transition: transform 1s ease-out;
+    gap: 20px; /* Abstand zwischen Bild und Text */
+}
+
+.start img {
+    width: 300px; /* Passe die Größe nach Bedarf an */
+    height: auto;
+    margin-bottom: 20px; /* Zusätzlicher Abstand nach unten */
+}
+
+
+/* Nur auf kleineren Bildschirmen (Handy & Tablet) */
+@media (max-width: 992px) {
+    .start {
+
+        align-items: center;
+        padding: 20px;
+        height: auto; /* Höhe nicht fixiert */
+        font-size: 24px;
+    }
+
+    .start img {
+        width: 80px; /* Kleineres Logo */
+        height: auto;
+        margin-bottom: 0;
+        margin-right: 15px; /* Etwas Abstand zur Überschrift */
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+}
+
+/* Scroll-Indikator für große Bildschirme */
+.scroll-indicator {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    color: white;
+    animation: blink 1s infinite alternate;
+}
+
+/* Animation für das Blinken */
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+
+/* Scroll-Indikator bei kleineren Geräten ausblenden */
+@media (max-width: 767px) {
+    .scroll-indicator {
+        display: none;
+    }
+}
+
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa;
-}
-
-/* ========== Allgemeine Layout-Einstellungen ========== */
-.container {
-    max-width: 100%;
-    margin: auto;
-    padding: 20px;
-}
-
-/* Listenübersicht */
-.list-container {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 20px; /* Abstand zwischen den beiden Bereichen */
-}
-
-/* ========== Listenbereich (Sidebar) ========== */
-#list-view {
-    min-height: 100vh; /* Füllt den linken Bereich auf große Höhe */
+    font-family: 'Poppins', sans-serif;
     background-color: var(--light-gray);
-    padding: 20px;
-    border-right: 2px solid var(--primary-blue);
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
-}
-
-/* ========== Detailbereich ========== */
-#detail-view {
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    min-height: 100vh; /* Füllt den rechten Bereich auf große Höhe */
-}
-
-/* ========== Titel und Überschriften ========== */
-h1 {
-    font-family: 'Roboto', sans-serif;
-    font-weight: bold;
-    font-size: 2.5rem;
-    color: var(--primary-blue);
 }
 
 h4 {
-    font-size: 1.25rem;
-    color: var(--dark-gray);
+    font-weight: bold;
+    padding-top: 24px;
+}
+
+h2 {
+    font-size: 24px;
+    color: var(--top-blue);
 }
 
 
+.btn {
+    font-family: 'Montserrat', sans-serif;
+}
 
+.row {
+    padding: 26px;
+}
+
+
+/* ========== Listenbereich (Sidebar) ========== */
+
+#list-view {
+    min-height: 100vh; /* Füllt den linken Bereich auf große Höhe */
+    background-color: var(--light-gray);
+    padding-left: 20px;
+    border-right: 2px solid var(--top-blue);
+}
+
+/* ========== Detailbereich ========== */
+
+#detail-view {
+    border-top: var(--top-blue);
+    min-height: 100vh; /* Füllt den rechten Bereich auf große Höhe */
+}
 
 
 /* ========== Listen-Styling ========== */
+
 #list-view .list-group-item {
     cursor: pointer;
     padding: 15px;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     background-color: #ffffff;
-    border-radius: 5px;
+    border-radius: 6px;
     border: 1px solid var(--border-gray);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 #list-view .list-group-item:hover {
-    background-color: var(--primary-blue);
+    background-color: var(--top-blue);
     color: white;
     transform: translateX(5px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* ========== Erledigte Items (durchgestrichen) ========== */
+
 .strikethrough {
     text-decoration: line-through;
-    color: var(--completed-item);
+    color: var(--bootstrap-red);
     transition: text-decoration 0.3s ease, color 0.3s ease;
 }
 
 /* ========== Responsive Feinschliff ========== */
-@media (max-width: 992px) {
+@media (max-width: 991px) {
     /* Statt 2 Spalten nur 1 Spalte */
-    .list-container {
-        grid-template-columns: 1fr;
-        gap: 10px; /* etwas reduzierter Abstand */
-    }
-
-    /* Weniger Padding im Container */
-    .container {
-        padding: 10px;
-    }
-
-    /* Listenbereich nicht künstlich hochziehen */
     #list-view {
         min-height: auto;
         border-right: none;
-        border-bottom: 2px solid var(--primary-blue);
+        border-bottom: 2px solid var(--top-blue);
         box-shadow: none; /* Falls du den Schatten auf Mobile nicht willst */
         padding: 15px;
     }
@@ -112,16 +163,28 @@ h4 {
     /* Detailansicht direkt darunter, ohne großen Abstand */
     #detail-view {
         min-height: auto;
-        margin-top: 0; /* kein Extra-Abstand mehr */
-        padding: 15px;
+
     }
 }
 
-/* Noch kleinere Geräte */
+
 @media (max-width: 576px) {
-    /* Noch etwas kompakter */
-    .container {
-        padding: 10px;
+
+    .start {
+        font-size: 24px;
+    }
+
+    h4 {
+        font-size: 16px;
+    }
+
+    .list-name, .text-overlay, .list-group-item {
+        font-size: 12px;
+
+    }
+
+    .btn {
+        font-size: 12px;
     }
 
     #list-view {
@@ -135,62 +198,31 @@ h4 {
     h1 {
         font-size: 2rem;
     }
+
 }
 
 
 .edit {
-        background-color: #ffc107; /* Warnfarbe von Bootstrap */
+    background-color: #ffc107; /* Warnfarbe von Bootstrap */
 }
 
-.delete{
-    background-color: #dc3545;
+.delete {
+    background-color: var(--bootstrap-red);
     color: white;
 }
 
-.newList{
-    background-color: #0d6efd;
+.newList {
+    background-color: var(--top-blue);
     color: white;
 }
 
 
 
-
-
-
-
-
-/* Modal Header */
-.custom-modal .modal-header {
-    background-color: #007bff !important;
-    color: white !important;
-    padding: 16px
+.profile-icon {
+    position: absolute;
+    top: 12px; /* Abstand vom oberen Rand */
+    right: 12px; /* Abstand vom rechten Rand */
+    font-size: 2rem; /* Größe des Icons anpassen */
+    color: white;
+    cursor: pointer; /* Optional: Zeigt an, dass es klickbar ist */
 }
-
-
-/* Styling für den Absatz "Gewünschter Artikel nicht gefunden?" */
-.modal-footer a {
-    color: #007bff; /* Blaue Schriftfarbe */
-    font-size: 14px; /* Schriftgröße */
-    text-decoration: none; /* Kein Unterstrich */
-    margin-right: 10px; /* Abstand zum nächsten Element */
-}
-
-
-
-/* Styling für den Button "Neuen Artikeleintrag erstellen" */
-#add-article-entry {
-    background-color: #f8f9fa; /* Heller Hintergrund */
-    color: #007bff; /* Blaue Schriftfarbe */
-    border: 2px solid #007bff; /* Blaues Border */
-    padding: 8px 16px; /* Polsterung */
-    border-radius: 5px; /* Abgerundete Ecken */
-    font-size: 14px; /* Schriftgröße */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Weicher Übergang */
-}
-
-#add-article-entry:hover {
-    background-color: #007bff; /* Hintergrundfarbe beim Hover */
-    color: white; /* Weiße Schriftfarbe beim Hover */
-}
-
-
