@@ -37,17 +37,18 @@ export class ListView {
                     <input type="checkbox" class="list-completed" data-id="${list.id}" ${list.completed ? 'checked' : ''}>
                     <span class="list-name">${list.name}</span>
                 </span>
-                <span class="list-actions">
-                <button class="btn btn-info btn-sm share-list" data-id="${list.id}" title="Liste teilen">
-                        <i class="bi bi-share"></i>
-                    </button>
-                    <button class="btn btn-warning btn-sm edit-list" data-id="${list.id}" title="Liste bearbeiten">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-danger btn-sm delete-list" data-id="${list.id}" title="Liste löschen">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </span>
+             <span class="list-actions d-flex gap-2 flex-row flex-lg-column align-items-end">
+    <button class="btn btn-info btn-sm share-list d-flex align-items-center w-auto" data-id="${list.id}" title="Liste teilen">
+        <i class="bi bi-share"></i>
+    </button>
+    <button class="btn btn-warning btn-sm edit-list d-flex align-items-center w-auto" data-id="${list.id}" title="Liste bearbeiten">
+        <i class="bi bi-pencil"></i>
+    </button>
+    <button class="btn btn-danger btn-sm delete-list d-flex align-items-center w-auto" data-id="${list.id}" title="Liste löschen">
+        <i class="bi bi-trash"></i>
+    </button>
+</span>
+
             `;
             this.listContainer.appendChild(div); // Liste zum Container hinzufügen
 
@@ -82,7 +83,7 @@ export class ListView {
      * Zeigt eine Standardansicht, falls keine Liste ausgewählt wurde.
      */
     showListOverview() {
-        this.detailContainer.innerHTML = "<p>Bitte wähle eine Liste aus, um Details anzuzeigen.</p>";
+        this.detailContainer.innerHTML = "<p class='text-overlay'>Bitte wähle eine Liste aus, um Details anzuzeigen.</p>";
     }
 
     /**
@@ -111,7 +112,7 @@ export class ListView {
 
         this.detailContainer.dataset.currentlistid = list.id;
         this.detailContainer.innerHTML = `
-        <h4>${list.name} - Status: ${listCompletionStatus}</h4>
+        <h2>${list.name} - Status: ${listCompletionStatus}</h2>
         <ul class="list-group">
             ${list.items.map(itemRef => {
             const item = items.find(i => i.id === itemRef.id);
