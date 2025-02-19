@@ -16,36 +16,82 @@ export class ArtikelController {
         const modal = document.getElementById("articleEntryModal");
         if (!modal) return;
 
-        // Fokus auf den ersten Button setzen, wenn das Modal angezeigt wird
         modal.addEventListener("shown.bs.modal", () => {
             modal.querySelector("button").focus();
         });
 
-        // Eingabefelder zurücksetzen, wenn das Modal geschlossen wird
         modal.addEventListener("hidden.bs.modal", () => {
             document.getElementById("add-article-entry").focus();
             document.getElementById("articleEntryName").value = "";
             document.getElementById("articleEntryTag").value = "";
             document.getElementById("articleEntryDescription").value = "";
             document.getElementById("articleEntryImage").value = "";
+            document.getElementById("newTagContainer").style.display = "none"; // Eingabefeld für neuen Tag verstecken
         });
+
+        // Elemente für das Tag-Dropdown und die neue Tag-Eingabe
+        const tagSelect = document.getElementById("articleEntryTag");
+        const filterDropdown = document.getElementById("newProductTag");
+        const newTagContainer = document.getElementById("newTagContainer");
+        const newTagInput = document.getElementById("newTagInput");
+        const confirmNewTagBtn = document.getElementById("confirmNewTag");
+
+        // Event für Dropdown-Änderungen
+        tagSelect.addEventListener("change", () => {
+            if (tagSelect.value === "new") {
+                newTagContainer.style.display = "block";
+                newTagInput.focus();
+            } else {
+                newTagContainer.style.display = "none";
+            }
+        });
+
+        confirmNewTagBtn.addEventListener("click", () => {
+            const newTag = newTagInput.value.trim();
+            if (newTag) {
+                // Neues option-Element anlegen
+                const newOption = document.createElement("option");
+                newOption.value = newTag;
+                newOption.textContent = newTag;
+
+                // Passende Stelle im Dropdown finden
+                const newTagOption = tagSelect.querySelector('option[value="new"]');
+                // Vor der "Neuen Tag erstellen"-Option einfügen
+                tagSelect.insertBefore(newOption, newTagOption);
+                // Direkt den neuen Tag auswählen
+                tagSelect.value = newTag;
+
+                // Dasselbe ggf. für den Filter-Dropdown machen
+                const filterOption = document.createElement("option");
+                filterOption.value = newTag;
+                filterOption.textContent = newTag;
+                const filterNewTagOption = filterDropdown.querySelector('option[value="new"]');
+                filterDropdown.insertBefore(filterOption, filterNewTagOption);
+
+                // Input-Feld und Container zurücksetzen
+                newTagInput.value = "";
+                newTagContainer.style.display = "none";
+
+                // Liste nach neuem Tag filtern
+                this.filterArticlesByTag(newTag);
+            }
+        });
+
 
         // Klick-Event für den "Eintrag hinzufügen"-Button
         const addBtn = document.getElementById("addArticleEntry");
         if (addBtn) {
             addBtn.addEventListener("click", () => {
-                const nameInput = document.getElementById("articleEntryName").value;
-                const tagInput = document.getElementById("articleEntryTag").value;
-                const descriptionInput = document.getElementById("articleEntryDescription").value;
-                const imageInput = document.getElementById("articleEntryImage").value;
+                const nameInput = document.getElementById("articleEntryName").value.trim();
+                const tagInput = tagSelect.value;
+                const descriptionInput = document.getElementById("articleEntryDescription").value.trim();
+                const imageInput = document.getElementById("articleEntryImage").value.trim();
 
-                // Validierung der Eingabefelder
-                if (nameInput.length === 0 || tagInput.length === 0 || descriptionInput.length === 0) {
-                    alert("Bitte gib einen Namen und einen Tag an.");
+                if (!nameInput || !tagInput || !descriptionInput) {
+                    alert("Bitte gib einen Namen, eine Beschreibung und einen Tag an.");
                     return;
                 }
 
-                // Neuen Artikel erstellen
                 const newArticle = {
                     id: Date.now(),
                     title: nameInput,
@@ -54,13 +100,28 @@ export class ArtikelController {
                     tag: tagInput
                 };
 
-                // Artikel zum Modell hinzufügen
-                this.model.items.push(newArticle);
-                // Event auslösen, um die Daten zu aktualisieren
+                // neu hinzugefügten Artikel ganz oben hinzufügen
+                this.model.items.unshift(newArticle);
+
+
+                // Artikelübersicht aktualisieren
                 document.dispatchEvent(new Event("dataLoaded"));
+
+                // Gesamte Artikelübersicht aktualisieren
+                this.showAllArticles();
             });
+
         }
     }
+
+    /**
+     * Zeigt alle Artikel in der Ansicht an.
+     */
+    showAllArticles() {
+        this.artikelView.renderItemsInModal(this.model.items);
+    }
+
+
 
     /**
      * setupModalEvents()
