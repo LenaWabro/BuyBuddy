@@ -19,3 +19,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     listView.showListOverview();
 });
+
+/*document.querySelectorAll('.modal').forEach(modalEl => {
+    modalEl.addEventListener('hide.bs.modal', () => {
+        if (modalEl.contains(document.activeElement)) {
+            document.activeElement.blur();
+        }
+    });
+});
+
+ */
+
+window.addEventListener('wheel', function (event) {
+    if (window.scrollY === 0) {
+        event.preventDefault(); // Standard-Scrollverhalten verhindern
+        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' }); // Scrollt nach unten
+    }
+}, { passive: false });
+
+
+
