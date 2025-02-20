@@ -31,25 +31,26 @@
 
 
 /* Nur auf kleineren Bildschirmen (Handy & Tablet) */
-@media (max-width: 992px) {
+/*@media (max-width: 992px) {
     .start {
 
         align-items: center;
         padding: 20px;
-        height: auto; /* Höhe nicht fixiert */
+        height: auto; /* Höhe nicht fixiert
         font-size: 24px;
     }
 
     .start img {
-        width: 80px; /* Kleineres Logo */
+        width: 80px; /* Kleineres Logo
         height: auto;
         margin-bottom: 0;
-        margin-right: 15px; /* Etwas Abstand zur Überschrift */
         position: absolute;
         top: 10px;
         left: 10px;
     }
 }
+
+ */
 
 /* Scroll-Indikator für große Bildschirme */
 .scroll-indicator {
@@ -60,6 +61,9 @@
     font-size: 20px;
     color: white;
     animation: blink 1s infinite alternate;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 /* Animation für das Blinken */
@@ -72,12 +76,33 @@
     }
 }
 
-/* Scroll-Indikator bei kleineren Geräten ausblenden */
+/* Scroll-Indikator bei kleineren Geräten ausblenden
 @media (max-width: 767px) {
     .scroll-indicator {
         display: none;
     }
 }
+
+
+ */
+@media (max-width: 991px) {
+    .scroll-indicator {
+        font-size: 14px;
+        position: fixed;
+        bottom: 56px; /* Abstand vom unteren Rand */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .start img {
+        width: 200px; /* Passe die Größe nach Bedarf an */
+        height: auto;
+        margin-bottom: 20px; /* Zusätzlicher Abstand nach unten */
+    }
+}
+
+
 
 
 body {
@@ -162,7 +187,7 @@ h2 {
 
     /* Detailansicht direkt darunter, ohne großen Abstand */
     #detail-view {
-        min-height: auto;
+        min-height: 100vh;
 
     }
 }
