@@ -30,12 +30,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
  */
 
+// Scroll-Event
 window.addEventListener('wheel', function (event) {
     if (window.scrollY === 0) {
-        event.preventDefault(); // Standard-Scrollverhalten verhindern
-        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' }); // Scrollt nach unten
+        event.preventDefault();
+        window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     }
 }, { passive: false });
+
+// Klick-Event auf .start
+document.querySelector('.start').addEventListener('click', function () {
+    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+});
+
 
 
 
