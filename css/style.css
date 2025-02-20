@@ -8,26 +8,32 @@
 
 /* Styling für das Haupt-Element */
 /* Standard: Start-Screen mit 100vh für größere Bildschirme */
+
 .start {
     background-color: var(--top-blue);
     width: 100vw;
     height: 100vh;
     display: flex;
-    flex-direction: column; /* Stapelt Elemente vertikal */
+    flex-direction: column; /* Stapelt Elemente vertikal*/
     justify-content: center;
     align-items: center;
     font-size: 45px;
     color: white;
     position: relative;
     transition: transform 1s ease-out;
-    gap: 20px; /* Abstand zwischen Bild und Text */
+    gap: 20px; /* Abstand zwischen Bild und Text*/
 }
 
+
+
 .start img {
-    width: 300px; /* Passe die Größe nach Bedarf an */
+    width: 300px;
     height: auto;
-    margin-bottom: 20px; /* Zusätzlicher Abstand nach unten */
+    margin-bottom: 20px;
 }
+
+
+
 
 
 /* Nur auf kleineren Bildschirmen (Handy & Tablet) */
@@ -52,7 +58,10 @@
 
  */
 
+
+
 /* Scroll-Indikator für große Bildschirme */
+
 .scroll-indicator {
     position: absolute;
     bottom: 20px;
@@ -85,6 +94,7 @@
 
 
  */
+
 @media (max-width: 991px) {
     .scroll-indicator {
         font-size: 14px;
@@ -245,9 +255,29 @@ h2 {
 
 .profile-icon {
     position: absolute;
-    top: 12px; /* Abstand vom oberen Rand */
-    right: 12px; /* Abstand vom rechten Rand */
-    font-size: 2rem; /* Größe des Icons anpassen */
+    top: 12px;
+    right: 18px;
+    font-size: 3rem;
     color: white;
-    cursor: pointer; /* Optional: Zeigt an, dass es klickbar ist */
+    cursor: pointer;
 }
+
+.article-overview{
+    background-color: var(--top-blue);
+    color: white;
+}
+
+#add-list{
+    color:  var(--top-blue);
+    border-color: var(--top-blue);
+}
+
+#add-list:hover, .btn-primary{
+    background-color: var(--top-blue);
+    color: #fff;
+}
+
+.article-not-found {
+    margin-top: 26px; /* Abstand nach oben */
+}
+

@@ -51,7 +51,7 @@
 <div class="modal fade" id="articleModal" tabindex="-1" aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header article-overview">
                 <h5 class="modal-title" id="articleModalLabel">
                     <i class="bi bi-bag-plus"></i> Artikelübersicht
                 </h5>
@@ -78,9 +78,12 @@
                     hinzufügen
                 </button>
 
-                <a>Gewünscher Artikel nicht gefunden?</a>
-                <button class="btn btn-outline-primary" id="add-article-entry" data-bs-toggle="modal"
-                        data-bs-target="#articleEntryModal">Neuen Artikeleintrag erstellen
+                <div class="article-not-found">
+                <a>Gewünschter Artikel nicht gefunden?</a>
+                </div>
+
+                <button class="btn btn-warning" id="add-article-entry" data-bs-toggle="modal"
+                        data-bs-target="#articleEntryModal"> Neuen Artikeleintrag erstellen
                 </button>
             </div>
         </div>

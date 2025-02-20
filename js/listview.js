@@ -8,7 +8,6 @@
  * -enthält Event-Listener, um Änderungen der Listen und Artikel an den Controller weiterzugeben.
  *
  */
-
 export class ListView {
     constructor(model) {
         this.model = model; // Das gesamte Model speichern, um darauf zuzugreifen
@@ -127,8 +126,8 @@ export class ListView {
                 `;
         }).join("")}
         </ul>
-        <button id="openModalBtn" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#articleModal">
-            Füge einen Artikel hinzu<i class="bi bi-cart-check-fill"></i>
+        <button id="openModalBtn" class="btn article-overview" data-bs-toggle="modal" data-bs-target="#articleModal">
+            <i class="bi bi-bag-plus-fill"></i>
         </button>
     `;
 

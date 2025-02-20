@@ -3,6 +3,8 @@ import { ListView } from "./listview.js";
 import { ArtikelView } from "./articleview.js";
 import { ListController } from "./listcontroller.js";
 import { ArtikelController } from "./articlecontroller.js";
+import { User } from "./user.js";
+import { UserController } from "./usercontroller.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const model = new Model();
@@ -20,15 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     listView.showListOverview();
 });
 
-/*document.querySelectorAll('.modal').forEach(modalEl => {
-    modalEl.addEventListener('hide.bs.modal', () => {
-        if (modalEl.contains(document.activeElement)) {
-            document.activeElement.blur();
-        }
-    });
-});
-
- */
 
 // Scroll-Event
 window.addEventListener('wheel', function (event) {
@@ -38,10 +31,13 @@ window.addEventListener('wheel', function (event) {
     }
 }, { passive: false });
 
+
 // Klick-Event auf .start
 document.querySelector('.start').addEventListener('click', function () {
     window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
 });
+
+
 
 
 

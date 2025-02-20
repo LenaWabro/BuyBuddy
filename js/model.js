@@ -1,10 +1,26 @@
+// model.js
+import { User } from "./user.js";
+
+
 export class Model {
     constructor() {
         this.lists = [];  // Einkaufslisten
         this.items = [];  // Artikel
         this.tags = [];   // Tags
+        this.users = [];  // Speichert Benutzer aus user.json
         this.loadData();
     }
+    async loadUsers() {
+        try {
+            const response = await fetch("./data/user.json");
+            const data = await response.json();
+            this.users = data.map(user => new User(user.id, user.name, user.email));
+            console.log("Benutzer geladen:", this.users);
+        } catch (error) {
+            console.error("Fehler beim Laden der Benutzer:", error);
+        }
+    }
+
 
     async loadData() {
         try {
@@ -29,7 +45,7 @@ export class Model {
         this.tags = [...new Set(this.items.flatMap(item => item.tags || []))];
     }
 
-    getItems() {
+    /*getItems() {
         return this.items;
     }
 
@@ -45,8 +61,11 @@ export class Model {
         return this.items.filter(item => item.tags.includes(tagName));
     }
 
-    /**
-     * Fügt einen neuen Tag hinzu, falls er noch nicht existiert
+     */
+
+    /*
+
+      Fügt einen neuen Tag hinzu, falls er noch nicht existiert
      */
     addTag(tagName) {
         if (!this.tags.includes(tagName)) {
