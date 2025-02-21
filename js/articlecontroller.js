@@ -4,8 +4,9 @@ export class ArtikelController {
         this.artikelView = artikelView;
         this.listView = listView;
         this.selectedItems = {}; // Speichert die ausgewählten Artikel (ID: Menge)
-        this.setupModalEvents(); // Initialisiert alle Events für das Artikelmodal
-        this.setupModalEventsForNewArticle(); // Initialisiert die Events für das Modal zur Neuanlage eines Artikels
+        // Initialisiert alle Events
+        this.setupModalEvents();
+        this.setupModalEventsForNewArticle();
     }
 
     /**
@@ -36,7 +37,7 @@ export class ArtikelController {
         const newTagInput = document.getElementById("newTagInput");
         const confirmNewTagBtn = document.getElementById("confirmNewTag");
 
-        // Event für Dropdown-Änderungen
+        // Wenn der Benutzer "Neuen Tag" auswählt
         tagSelect.addEventListener("change", () => {
             if (tagSelect.value === "new") {
                 newTagContainer.style.display = "block";
@@ -46,44 +47,43 @@ export class ArtikelController {
             }
         });
 
+        // Bestätigen eines neuen Tags
         confirmNewTagBtn.addEventListener("click", () => {
             const newTag = newTagInput.value.trim();
             if (newTag) {
-                // Neues option-Element anlegen
+                // 1) Tag im Model anlegen
+                this.model.addTag(newTag);
+
+                // 2) Tag im Dropdown sichtbar machen
                 const newOption = document.createElement("option");
                 newOption.value = newTag;
                 newOption.textContent = newTag;
-
-                // Passende Stelle im Dropdown finden
                 const newTagOption = tagSelect.querySelector('option[value="new"]');
-                // Vor der "Neuen Tag erstellen"-Option einfügen
                 tagSelect.insertBefore(newOption, newTagOption);
-                // Direkt den neuen Tag auswählen
                 tagSelect.value = newTag;
 
-                // Dasselbe ggf. für den Filter-Dropdown machen
+                // Dasselbe für den Filter-Dropdown
                 const filterOption = document.createElement("option");
                 filterOption.value = newTag;
                 filterOption.textContent = newTag;
                 const filterNewTagOption = filterDropdown.querySelector('option[value="new"]');
                 filterDropdown.insertBefore(filterOption, filterNewTagOption);
 
-                // Input-Feld und Container zurücksetzen
+                // Eingabefeld zurücksetzen
                 newTagInput.value = "";
                 newTagContainer.style.display = "none";
 
-                // Liste nach neuem Tag filtern
+                // Gleich nach dem neuen Tag filtern
                 this.filterArticlesByTag(newTag);
             }
         });
-
 
         // Klick-Event für den "Eintrag hinzufügen"-Button
         const addBtn = document.getElementById("addArticleEntry");
         if (addBtn) {
             addBtn.addEventListener("click", () => {
                 const nameInput = document.getElementById("articleEntryName").value.trim();
-                const tagInput = tagSelect.value;
+                const tagInput = document.getElementById("articleEntryTag").value;
                 const descriptionInput = document.getElementById("articleEntryDescription").value.trim();
                 const imageInput = document.getElementById("articleEntryImage").value.trim();
 
@@ -92,6 +92,7 @@ export class ArtikelController {
                     return;
                 }
 
+                // Neues Artikelobjekt mit EINEM Tag
                 const newArticle = {
                     id: Date.now(),
                     title: nameInput,
@@ -100,17 +101,15 @@ export class ArtikelController {
                     tag: tagInput
                 };
 
-                // neu hinzugefügten Artikel ganz oben hinzufügen
-                this.model.items.unshift(newArticle);
+                // => Übers Model hinzufügen
+                this.model.addArticle(newArticle);
 
-
-                // Artikelübersicht aktualisieren
+                // Daten-Event auslösen
                 document.dispatchEvent(new Event("dataLoaded"));
 
                 // Gesamte Artikelübersicht aktualisieren
                 this.showAllArticles();
             });
-
         }
     }
 
@@ -118,10 +117,11 @@ export class ArtikelController {
      * Zeigt alle Artikel in der Ansicht an.
      */
     showAllArticles() {
-        this.artikelView.renderItemsInModal(this.model.items);
+        // Holt die Artikel aus dem Model
+        const items = this.model.getItems();
+        // Lässt die Artikel in der View rendern
+        this.artikelView.renderItemsInModal(items);
     }
-
-
 
     /**
      * setupModalEvents()
@@ -131,15 +131,12 @@ export class ArtikelController {
         const modal = document.getElementById("articleModal");
         if (!modal) return;
 
-        // Fokus setzen, wenn das Modal angezeigt wird
         modal.addEventListener("shown.bs.modal", () => {
             modal.querySelector("button").focus();
         });
 
-        // Wenn das Modal geschlossen wird, alle Eingaben zurücksetzen
         modal.addEventListener("hidden.bs.modal", () => {
             document.getElementById("add-list").focus();
-
             // Alle Checkboxen deaktivieren
             modal.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             // Alle Mengenfelder auf "1" zurücksetzen
@@ -151,21 +148,20 @@ export class ArtikelController {
                 tagSelect.value = '';
             }
 
-            // WICHTIG: Zuerst die gespeicherte Auswahl leeren, bevor die Liste neu gerendert wird
+            // Auswahl leeren
             this.selectedItems = {};
 
-            // Erneut rendern – jetzt sind alle Mengen auf Standard (1)
+            // Erneut alle Artikel anzeigen
             this.filterArticlesByTag('');
         });
 
-        // Klick-Event für den Button "Zur Liste hinzufügen"
+        // Klick-Event: Artikel zur Liste hinzufügen
         const addToListBtn = document.getElementById("addToListBtn");
         if (addToListBtn) {
             addToListBtn.addEventListener("click", () => {
                 const checkboxes = modal.querySelectorAll('input[type="checkbox"]:checked');
                 const selectedItems = [];
 
-                // Für jeden ausgewählten Artikel Menge ermitteln
                 checkboxes.forEach(cb => {
                     const itemId = parseInt(cb.value);
                     const quantityInput = modal.querySelector(`#quantity-${itemId}`);
@@ -183,32 +179,43 @@ export class ArtikelController {
 
                 const detailContainer = document.getElementById("detail-container");
                 const listId = parseInt(detailContainer.dataset.currentlistid);
-                const list = this.model.lists.find(l => l.id === listId);
+                // Liste über das Model suchen
+                const list = this.model.getListById(listId);
 
                 if (!list) {
                     alert("Liste nicht gefunden.");
                     return;
                 }
 
-                // Artikel der Liste hinzufügen oder vorhandene Mengen erhöhen
+                // Artikel hinzufügen / Menge erhöhen
                 selectedItems.forEach(item => {
                     const existingItem = list.items.find(i => i.id === item.id);
                     if (existingItem) {
                         existingItem.quantity += item.quantity;
                     } else {
-                        const newItem = this.model.items.find(i => i.id === item.id);
+                        // Hier: Statt this.model.items => this.model.getItems()
+                        const newItem = this.model.getItems().find(i => i.id === item.id);
                         if (newItem) {
+                            // Wichtig: Neu hinzugefügte Artikel sind immer erstmal unchecked
                             list.items.push({ ...newItem, quantity: item.quantity, checked: false });
                         }
                     }
                 });
 
-                // Aktualisierte Liste anzeigen
-                this.listView.showListDetails(list, this.model.items);
+// **Hier**: Wenn die Liste vorher abgeschlossen war, nun auf "nicht abgeschlossen" setzen
+                if (list.completed) {
+                    list.completed = false;
+                }
+
+// Liste aktualisieren und View neu rendern
+                this.model.updateList(list);
+                this.listView.renderLists(this.model.getLists());
+                this.listView.showListDetails(list, this.model.getItems());
+
             });
         }
 
-        // Event für das Dropdown zum Filtern nach Tag
+        // Tag-Filter im Modal
         const tagSelect = modal.querySelector('#newProductTag');
         if (tagSelect) {
             tagSelect.addEventListener('change', (event) => {
@@ -216,22 +223,25 @@ export class ArtikelController {
             });
         }
 
-        /**
-         * filterArticlesByTag(tag)
-         * Rendert die Artikelliste basierend auf dem gewählten Tag.
-         */
+        // Filter-Methode für die Artikel im Modal
         this.filterArticlesByTag = (tag) => {
             const articleList = modal.querySelector('#articleList');
             articleList.innerHTML = ''; // Alte Inhalte löschen
 
-            // Artikel filtern (wenn kein Tag, dann alle anzeigen)
-            const filteredItems = this.model.items.filter(item => !tag || item.tag === tag);
+            // Model nach Tag fragen
+            let filteredItems;
+            if (!tag) {
+                // Alle anzeigen
+                filteredItems = this.model.getItems();
+            } else {
+                // Gefilterte Artikel
+                filteredItems = this.model.getItemsByTag(tag);
+            }
 
             filteredItems.forEach(item => {
                 const li = document.createElement('li');
                 li.classList.add('list-group-item', 'd-flex', 'align-items-center');
 
-                // Wird hier anhand von selectedItems entweder der gespeicherte Wert oder 1 verwendet
                 const currentQuantity = this.selectedItems[item.id] || 1;
                 const isChecked = !!this.selectedItems[item.id];
 
@@ -257,14 +267,14 @@ export class ArtikelController {
                 `;
                 articleList.appendChild(li);
 
-                // Event, um die Menge zu speichern, wenn sie geändert wird
-                const quantityInput = modal.querySelector(`#quantity-${item.id}`);
+                // Menge ändern
+                const quantityInput = li.querySelector(`#quantity-${item.id}`);
                 quantityInput.addEventListener('change', (event) => {
                     this.selectedItems[item.id] = parseInt(event.target.value);
                 });
 
-                // Event, um den Checkbox-Status zu speichern
-                const checkbox = modal.querySelector(`#item-${item.id}`);
+                // Checkbox-Status
+                const checkbox = li.querySelector(`#item-${item.id}`);
                 checkbox.addEventListener('change', () => {
                     if (checkbox.checked) {
                         this.selectedItems[item.id] = parseInt(quantityInput.value);
@@ -276,16 +286,4 @@ export class ArtikelController {
         };
     }
 
-    /**
-     * restoreSelectedItems(modal)
-     * Stellt sicher, dass die Checkboxen den ausgewählten Artikeln entsprechen.
-     * (Wird hier nicht mehr verwendet, da beim Schließen das Modal vollständig zurückgesetzt wird.)
-     */
-    restoreSelectedItems(modal) {
-        const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            const itemId = parseInt(cb.value);
-            cb.checked = !!this.selectedItems[itemId];
-        });
-    }
 }
