@@ -6,7 +6,6 @@ export class ListController {
     }
 
     setupListEvents() {
-        // Neuer Listen-Button: Modal öffnen
         const addListBtn = document.getElementById("add-list");
         if (addListBtn) {
             addListBtn.addEventListener("click", () => {
@@ -15,7 +14,6 @@ export class ListController {
             });
         }
 
-        // Beim Klick auf „Erstellen“
         const createListBtn = document.getElementById("createList");
         if (createListBtn) {
             createListBtn.addEventListener("click", () => {
@@ -31,80 +29,83 @@ export class ListController {
                         completed: false
                     };
 
-                    this.model.lists.push(newList);
-                    this.listView.renderLists(this.model.lists);
+                    this.model.addList(newList);
+                    this.listView.renderLists(this.model.getLists());
 
-                    // Eingabe leeren & Modal schließen
                     nameInput.value = "";
                     document.getElementById("addListModal").classList.remove("show");
-                    document.getElementById("addListModal").setAttribute("aria-hidden", "true");
                     document.body.classList.remove("modal-open");
                     document.querySelector(".modal-backdrop").remove();
                 }
             });
         }
 
-        // Delegierter Klick-Event auf den Listen-Container
         const listContainer = document.getElementById("list-container");
         if (listContainer) {
             listContainer.addEventListener("click", (event) => {
                 const target = event.target;
 
-                // 1) Liste als (un-)completed setzen (Checkbox):
+                // Listenelement (Checkbox)
+                // Controller-Teil fürs Anklicken der Listen-Checkbox
                 if (target.classList.contains("list-completed")) {
                     const id = parseInt(target.dataset.id);
-                    const list = this.model.lists.find(list => list.id === id);
+                    const list = this.model.getListById(id);
 
                     if (list) {
-                        list.completed = target.checked;
-                        list.items.forEach(itemRef => itemRef.checked = list.completed);
-                    }
+                        const isChecked = target.checked;
 
-                    this.listView.renderLists(this.model.lists);
-                    this.listView.showListDetails(list, this.model.items);
-                    return;
+                        // Liste auf checked setzen
+                        list.completed = isChecked;  // Falls du “list.completed” beibehalten willst
+                        // oder list.checked = isChecked;  // Wenn du’s auch bei der Liste so nennen möchtest
+
+                        // Alle Artikel in der Liste auch entsprechend setzen
+                        list.items.forEach(item => {
+                            // Hier bitte ebenfalls `checked` statt `completed`
+                            item.checked = isChecked;
+                        });
+
+                        // Speichern
+                        this.model.updateList(list);
+                        // Wenn du die Items im Model führst, ggf. updaten:
+                        // this.model.updateItems(list.items);
+
+                        // View aktualisieren
+                        this.listView.renderLists(this.model.getLists());
+                        this.listView.showListDetails(list, this.model.getItems());
+                    }
                 }
 
-                // 2) Liste löschen:
+
+
+
+
                 const deleteBtn = target.closest('.delete-list');
                 if (deleteBtn) {
                     const id = parseInt(deleteBtn.dataset.id);
-                    document.getElementById("deleteListId").value = id;  // Setze die ID in das versteckte Eingabefeld
-
-                    // Hole das Modal-Element und zeige es an
-                    const deleteModalElement = document.getElementById("deleteListModal");
-                    const deleteModal = new bootstrap.Modal(deleteModalElement);
-
+                    document.getElementById("deleteListId").value = id;
+                    const deleteModal = new bootstrap.Modal(document.getElementById("deleteListModal"));
                     deleteModal.show();
                 }
 
-                // 3) Liste bearbeiten:
                 const editBtn = target.closest('.edit-list');
                 if (editBtn) {
                     const id = parseInt(editBtn.dataset.id);
-                    const list = this.model.lists.find(list => list.id === id);
+                    const list = this.model.getListById(id);
 
-                    // Füllen des Modals mit den aktuellen Listendaten
                     const modal = new bootstrap.Modal(document.getElementById('editListModal'));
-                    document.getElementById('editListId').value = list.id;  // ID speichern
-                    document.getElementById('editListName').value = list.name;  // aktuellen Namen eintragen
+                    document.getElementById('editListId').value = list.id;
+                    document.getElementById('editListName').value = list.name;
 
-                    // Modal anzeigen
                     modal.show();
 
-                    // Event für den "Speichern"-Button
                     const saveBtn = document.getElementById('saveEditList');
                     saveBtn.onclick = () => {
                         const newName = document.getElementById('editListName').value.trim();
 
                         if (newName !== "") {
-                            // Listenname aktualisieren
                             list.name = newName;
-
-                            // Liste rendern
-                            this.listView.renderLists(this.model.lists);
-
-                            // Modal schließen
+                            this.model.updateList(list);
+                            this.listView.renderLists(this.model.getLists());
                             modal.hide();
                         } else {
                             alert("Bitte einen gültigen Namen eingeben.");
@@ -112,40 +113,25 @@ export class ListController {
                     };
                 }
 
-
-
-
-                // 5) Klick auf einen Listeneintrag (Liste öffnen):
                 if (event.target.dataset.id) {
                     const id = parseInt(event.target.dataset.id);
-                    const list = this.model.lists.find(list => list.id === id);
-                    this.listView.showListDetails(list, this.model.items);
+                    const list = this.model.getListById(id);
+                    this.listView.showListDetails(list, this.model.getItems());
                 }
             });
 
-            // Löschen der Liste bestätigen
             const confirmDeleteListBtn = document.getElementById("confirmDeleteList");
             if (confirmDeleteListBtn) {
                 confirmDeleteListBtn.addEventListener("click", () => {
                     const listId = parseInt(document.getElementById("deleteListId").value);
+                    this.model.deleteList(listId);
+                    this.listView.renderLists(this.model.getLists());
 
-                    // Liste aus dem Modell löschen
-                    this.model.lists = this.model.lists.filter(list => list.id !== listId);
-
-                    // Listenansicht neu rendern
-                    this.listView.renderLists(this.model.lists);
-
-
-
-                    // Optional: Entfernen des Modals aus dem DOM, um eine saubere Anzeige zu gewährleisten
-                    document.getElementById("deleteListModal").classList.remove("show");
-                    document.getElementById("deleteListModal").setAttribute("aria-hidden", "true");
-                    document.body.classList.remove("modal-open");
-                    const backdrop = document.querySelector(".modal-backdrop");
-                    if (backdrop) backdrop.remove();
+                    const deleteModalEl = document.getElementById("deleteListModal");
+                    const deleteModal = bootstrap.Modal.getInstance(deleteModalEl);
+                    deleteModal.hide();
                 });
             }
-
         }
     }
 }
