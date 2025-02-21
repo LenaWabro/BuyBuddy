@@ -3,8 +3,9 @@ import { ListView } from "./listview.js";
 import { ArtikelView } from "./articleview.js";
 import { ListController } from "./listcontroller.js";
 import { ArtikelController } from "./articlecontroller.js";
-import { User } from "./user.js";
-import { UserController } from "./usercontroller.js";
+
+
+let lastScrollPosition = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     const model = new Model();
@@ -22,13 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
     listView.showListOverview();
 });
 
-
+//für CSS Effekt
 // Scroll-Event
 window.addEventListener('wheel', function (event) {
-    if (window.scrollY === 0) {
+    const isOnTopScreen = window.scrollY < window.innerHeight;
+    const isScrollingDown = lastScrollPosition<window.scrollY;
+    if (isOnTopScreen && isScrollingDown) {
         event.preventDefault();
         window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
     }
+    lastScrollPosition=window.scrollY;
 }, { passive: false });
 
 
