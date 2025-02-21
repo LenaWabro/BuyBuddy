@@ -16,6 +16,9 @@
 <div class="start">
     <img src="./img/BuyBuddy.png" alt="Buy Buddy Logo">
     <h1>Buy Buddy</h1>
+    <div class="profile-icon">
+        <i class="bi bi-person-circle"></i>
+    </div>
 </div>
 <div class="scroll-indicator">
     Klicke auf den Bildschirm oder scrolle nach unten und fang an zu shoppen!
@@ -37,9 +40,6 @@
 
 
     <div class="col-lg-9" id="detail-view">
-        <div class="profile-icon">
-            <i class="bi bi-person-circle"></i>
-        </div>
         <h4>Details zur Liste</h4>
         <!-- Hier wird die data-currentListId gesetzt -->
         <div id="detail-container" data-currentListId="1"></div>
@@ -48,7 +48,7 @@
 
 
 <!-- Modal für die Artikelübersicht -->
-<div class="modal fade" id="articleModal" tabindex="-1" aria-hidden="false">
+<div class="modal fade" id="articleModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header article-overview">
@@ -91,7 +91,7 @@
 </div>
 
 <!-- Modal um Artikel hinzuzufgen -->
-<div class="modal fade" id="articleEntryModal" tabindex="-1" aria-hidden="false">
+<div class="modal fade" id="articleEntryModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -143,30 +143,30 @@
     </div>
 </div>
 
-
-<!-- Modal zum Löschen einer Liste -->
-<div class="modal fade" id="deleteListModal" tabindex="-1" aria-hidden="true">
+<!-- Modal HTML-Beispiel -->
+<div class="modal" id="deleteListModal" tabindex="-1" aria-labelledby="deleteListModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header delete">
-                <h5 class="modal-title">Liste löschen</h5>
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteListModalLabel">Liste löschen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Bist du sicher, dass du diese Liste löschen möchtest?</p>
-                <input type="hidden" id="deleteListId">
+                Möchtest du diese Liste wirklich löschen?
             </div>
             <div class="modal-footer">
+                <input type="hidden" id="deleteListId" />
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteList">Löschen</button>
+                <button type="button" id="confirmDeleteList" class="btn btn-danger">Löschen</button>
             </div>
         </div>
     </div>
 </div>
 
 
+
 <!-- Modal zum Bearbeiten einer Liste -->
-<div class="modal fade" id="editListModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="editListModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header edit">
@@ -187,7 +187,7 @@
 </div>
 
 <!-- Modal zum Erstellen einer neuen Liste -->
-<div class="modal fade" id="addListModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="addListModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header newList">
@@ -207,7 +207,7 @@
 </div>
 
 <!-- Modal zum Teilen einer Liste -->
-<div class="modal fade" id="shareListModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="shareListModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
