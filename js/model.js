@@ -1,15 +1,14 @@
-// model.js
 import { User } from "./user.js";
-
 
 export class Model {
     constructor() {
         this.lists = [];  // Einkaufslisten
-        this.items = [];  // Artikel
-        this.tags = [];   // Tags
-        this.users = [];  // Speichert Benutzer aus user.json
-        this.loadData();
+        this.items = [];  // Artikel (jedes item hat nur EINEN Tag => item.tag)
+        this.tags = [];   // Alle vorhandenen Tags
+        this.users = [];  // Benutzer
+        this.loadData();  // JSON-Daten laden
     }
+
     async loadUsers() {
         try {
             const response = await fetch("./data/user.json");
@@ -21,31 +20,26 @@ export class Model {
         }
     }
 
-
     async loadData() {
         try {
             const response = await fetch("./data/einkaufsliste.json");
             const data = await response.json();
             this.lists = data.lists;
             this.items = data.items;
-
-            // Tags aus den Artikeln extrahieren
+            // Da jedes item nur EINEN Tag (String) hat, passen wir extractTags entsprechend an:
             this.extractTags();
-
             document.dispatchEvent(new Event("dataLoaded"));
         } catch (error) {
             console.error("Fehler beim Laden der Daten:", error);
         }
     }
 
-    /**
-     * Extrahiert alle einzigartigen Tags aus den Artikeln
-     */
+    // Wenn jedes Item nur EINEN Tag (String) hat, extrahieren wir die Tags so:
     extractTags() {
-        this.tags = [...new Set(this.items.flatMap(item => item.tags || []))];
+        this.tags = [...new Set(this.items.map(item => item.tag))];
     }
 
-    /*getItems() {
+    getItems() {
         return this.items;
     }
 
@@ -57,15 +51,41 @@ export class Model {
         return this.lists.find(list => list.id === id);
     }
 
-    getItemsByTag(tagName) {
-        return this.items.filter(item => item.tags.includes(tagName));
+    addList(newList) {
+        this.lists.push(newList);
     }
 
+    updateList(updatedList) {
+        this.lists = this.lists.map(list => list.id === updatedList.id ? updatedList : list);
+    }
+
+    deleteList(id) {
+        this.lists = this.lists.filter(list => list.id !== id); // Entfernt die Liste mit der entsprechenden ID
+    }
+    updateItems(updatedItems) {
+        updatedItems.forEach(updatedItem => {
+            const list = this.lists.find(l => l.id === updatedItem.listId);
+            if (list) {
+                const itemIndex = list.items.findIndex(item => item.id === updatedItem.id);
+                if (itemIndex !== -1) {
+                    list.items[itemIndex] = updatedItem;
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Filtert Artikel nach Tag (String).
+     * Wenn kein Tag angegeben wird, gibt es alle Artikel zurück.
      */
+    getItemsByTag(tag) {
+        if (!tag) return this.items;
+        return this.items.filter(item => item.tag === tag);
+    }
 
-    /*
-
-      Fügt einen neuen Tag hinzu, falls er noch nicht existiert
+    /**
+     * Fügt einen neuen Tag hinzu, falls er noch nicht existiert.
      */
     addTag(tagName) {
         if (!this.tags.includes(tagName)) {
@@ -75,22 +95,20 @@ export class Model {
     }
 
     /**
-     * Erstellt einen neuen Artikel mit Titel, Bild und Tags
+     * Fügt einen neuen Artikel hinzu (nur EIN Tag möglich).
      */
-    createItem(title, image, tags = []) {
-        const newItem = {
-            id: Date.now(),
-            title: title,
-            image: image,
-            tags: tags
-        };
-
-        this.items.push(newItem);
-
-        // Tags hinzufügen, falls sie nicht existieren
-        tags.forEach(tag => this.addTag(tag));
-
-        document.dispatchEvent(new Event("itemAdded"));
-        return newItem;
+    addArticle(article) {
+        this.items.unshift(article); // Artikel am Anfang einfügen
+        this.saveItems();            // Im Local Storage speichern (optional)
+        this.extractTags();          // Tags aktualisieren
     }
+
+
+    /**
+     * Speichert Artikel in den Local Storage (optional).
+     */
+    saveItems() {
+        localStorage.setItem('articles', JSON.stringify(this.items));
+    }
+
 }

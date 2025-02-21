@@ -143,9 +143,12 @@ export class ListView {
             if (checkbox) {
                 checkbox.addEventListener('change', () => {
                     itemRef.checked = checkbox.checked;
-
-                    // Direkt in list.completed speichern, statt eine ungenutzte Variable zu haben
+                    // Wenn alle Artikel checked sind, dann ist auch die Liste completed
                     list.completed = list.items.every(i => i.checked);
+
+                    // ggf. im Model speichern
+                    this.model.updateList(list);
+                    // this.model.updateItems(list.items);
 
                     this.renderLists(this.model.lists);
                     this.showListDetails(list, items);
