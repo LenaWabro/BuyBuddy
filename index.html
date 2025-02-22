@@ -144,7 +144,7 @@
 </div>
 
 <!-- Modal HTML-Beispiel -->
-<div class="modal" id="deleteListModal" tabindex="-1" aria-labelledby="deleteListModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteListModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -171,7 +171,7 @@
         <div class="modal-content">
             <div class="modal-header edit">
                 <h5 class="modal-title">Liste umbenennen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editListId">
@@ -187,12 +187,12 @@
 </div>
 
 <!-- Modal zum Erstellen einer neuen Liste -->
-<div class="modal fade" id="addListModal" tabindex="-1">
+<div class="modal fade" id="addListModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header newList">
                 <h5 class="modal-title">Neue Liste erstellen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <label for="newListName">Listenname:</label>

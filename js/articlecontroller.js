@@ -9,10 +9,6 @@ export class ArtikelController {
         this.setupModalEventsForNewArticle();
     }
 
-    /**
-     * setupModalEventsForNewArticle()
-     * Konfiguriert die Events für das Modal, in dem neue Artikel angelegt werden.
-     */
     setupModalEventsForNewArticle() {
         const modal = document.getElementById("articleEntryModal");
         if (!modal) return;
@@ -51,10 +47,10 @@ export class ArtikelController {
         confirmNewTagBtn.addEventListener("click", () => {
             const newTag = newTagInput.value.trim();
             if (newTag) {
-                // 1) Tag im Model anlegen
+                // Tag im Model anlegen
                 this.model.addTag(newTag);
 
-                // 2) Tag im Dropdown sichtbar machen
+                // Tag im Dropdown sichtbar machen
                 const newOption = document.createElement("option");
                 newOption.value = newTag;
                 newOption.textContent = newTag;
@@ -101,7 +97,7 @@ export class ArtikelController {
                     tag: tagInput
                 };
 
-                // => Übers Model hinzufügen
+                // Artikel dem Model hinzufügen
                 this.model.addArticle(newArticle);
 
                 // Daten-Event auslösen
@@ -113,20 +109,11 @@ export class ArtikelController {
         }
     }
 
-    /**
-     * Zeigt alle Artikel in der Ansicht an.
-     */
     showAllArticles() {
-        // Holt die Artikel aus dem Model
         const items = this.model.getItems();
-        // Lässt die Artikel in der View rendern
         this.artikelView.renderItemsInModal(items);
     }
 
-    /**
-     * setupModalEvents()
-     * Konfiguriert die Events für das Modal, in dem Artikel zu einer Liste hinzugefügt werden.
-     */
     setupModalEvents() {
         const modal = document.getElementById("articleModal");
         if (!modal) return;
@@ -179,7 +166,6 @@ export class ArtikelController {
 
                 const detailContainer = document.getElementById("detail-container");
                 const listId = parseInt(detailContainer.dataset.currentlistid);
-                // Liste über das Model suchen
                 const list = this.model.getListById(listId);
 
                 if (!list) {
@@ -192,26 +178,26 @@ export class ArtikelController {
                     const existingItem = list.items.find(i => i.id === item.id);
                     if (existingItem) {
                         existingItem.quantity += item.quantity;
+                        // Wichtige Änderung: Artikel wird bei Mengenänderung wieder enthakt
+                        existingItem.checked = false;
                     } else {
-                        // Hier: Statt this.model.items => this.model.getItems()
                         const newItem = this.model.getItems().find(i => i.id === item.id);
                         if (newItem) {
-                            // Wichtig: Neu hinzugefügte Artikel sind immer erstmal unchecked
+                            // Neu hinzugefügte Artikel sind immer erstmal enthakt
                             list.items.push({ ...newItem, quantity: item.quantity, checked: false });
                         }
                     }
                 });
 
-// **Hier**: Wenn die Liste vorher abgeschlossen war, nun auf "nicht abgeschlossen" setzen
+                // Falls die Liste vorher als abgeschlossen markiert war, jetzt zurücksetzen:
                 if (list.completed) {
                     list.completed = false;
                 }
 
-// Liste aktualisieren und View neu rendern
+                // Liste aktualisieren und View neu rendern
                 this.model.updateList(list);
                 this.listView.renderLists(this.model.getLists());
                 this.listView.showListDetails(list, this.model.getItems());
-
             });
         }
 
@@ -228,13 +214,10 @@ export class ArtikelController {
             const articleList = modal.querySelector('#articleList');
             articleList.innerHTML = ''; // Alte Inhalte löschen
 
-            // Model nach Tag fragen
             let filteredItems;
             if (!tag) {
-                // Alle anzeigen
                 filteredItems = this.model.getItems();
             } else {
-                // Gefilterte Artikel
                 filteredItems = this.model.getItemsByTag(tag);
             }
 
@@ -285,5 +268,4 @@ export class ArtikelController {
             });
         };
     }
-
 }
