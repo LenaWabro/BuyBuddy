@@ -45,40 +45,43 @@ export class ListController {
             listContainer.addEventListener("click", (event) => {
                 const target = event.target;
 
-                // Listenelement (Checkbox)
-                // Controller-Teil fürs Anklicken der Listen-Checkbox
+                // Checkbox zum Abhaken der Liste
                 if (target.classList.contains("list-completed")) {
                     const id = parseInt(target.dataset.id);
                     const list = this.model.getListById(id);
 
                     if (list) {
                         const isChecked = target.checked;
+                        list.completed = isChecked;
 
-                        // Liste auf checked setzen
-                        list.completed = isChecked;  // Falls du “list.completed” beibehalten willst
-                        // oder list.checked = isChecked;  // Wenn du’s auch bei der Liste so nennen möchtest
-
-                        // Alle Artikel in der Liste auch entsprechend setzen
                         list.items.forEach(item => {
-                            // Hier bitte ebenfalls `checked` statt `completed`
                             item.checked = isChecked;
                         });
 
-                        // Speichern
                         this.model.updateList(list);
-                        // Wenn du die Items im Model führst, ggf. updaten:
-                        // this.model.updateItems(list.items);
-
-                        // View aktualisieren
                         this.listView.renderLists(this.model.getLists());
-                        this.listView.showListDetails(list, this.model.getItems());
+                    }
+                    // Teilen einer Liste
+                    if (target.classList.contains("share-list")) {
+                        const id = parseInt(target.dataset.id);
+                        document.getElementById("shareListId").value = id;
+
+                        const shareModal = new bootstrap.Modal(document.getElementById("shareListModal"));
+                        shareModal.show();
                     }
                 }
 
 
+                // Teilen einer Liste
+                if (target.classList.contains("share-list")) {
+                    const id = parseInt(target.dataset.id);
+                    document.getElementById("shareListId").value = id;
 
+                    const shareModal = new bootstrap.Modal(document.getElementById("shareListModal"));
+                    shareModal.show();
+                }
 
-
+                // Löschen einer Liste
                 const deleteBtn = target.closest('.delete-list');
                 if (deleteBtn) {
                     const id = parseInt(deleteBtn.dataset.id);
@@ -87,6 +90,7 @@ export class ListController {
                     deleteModal.show();
                 }
 
+                // Bearbeiten einer Liste
                 const editBtn = target.closest('.edit-list');
                 if (editBtn) {
                     const id = parseInt(editBtn.dataset.id);
@@ -113,6 +117,7 @@ export class ListController {
                     };
                 }
 
+                // Zeige Listen-Details an
                 if (event.target.dataset.id) {
                     const id = parseInt(event.target.dataset.id);
                     const list = this.model.getListById(id);
@@ -120,6 +125,7 @@ export class ListController {
                 }
             });
 
+            // Bestätigung des Löschens einer Liste
             const confirmDeleteListBtn = document.getElementById("confirmDeleteList");
             if (confirmDeleteListBtn) {
                 confirmDeleteListBtn.addEventListener("click", () => {
@@ -128,10 +134,32 @@ export class ListController {
                     this.listView.renderLists(this.model.getLists());
 
                     const deleteModalEl = document.getElementById("deleteListModal");
-                    const deleteModal = bootstrap.Modal.getInstance(deleteModalEl);
-                    deleteModal.hide();
+                    const deleteModalInstance = bootstrap.Modal.getInstance(deleteModalEl);
+                    deleteModalInstance.hide();
                 });
             }
+        }
+
+        // Bestätigung des Teilens einer Liste
+        const confirmShareListBtn = document.getElementById("confirmShareList");
+        if (confirmShareListBtn) {
+            confirmShareListBtn.addEventListener("click", () => {
+                const listId = parseInt(document.getElementById("shareListId").value);
+                const list = this.model.getListById(listId);
+
+                if (list) {
+                    // Hier kannst du die Logik zum Teilen der Liste einfügen
+                    // Zum Beispiel API-Aufruf, oder Logik zum tatsächlichen Teilen
+
+                    // Bestätigung durch ein Alert
+                    alert(`Die Liste "${list.name}" wurde erfolgreich geteilt!`);
+
+                    // Modal schließen
+                    const shareModalEl = document.getElementById("shareListModal");
+                    const shareModalInstance = bootstrap.Modal.getInstance(shareModalEl);
+                    shareModalInstance.hide();
+                }
+            });
         }
     }
 }

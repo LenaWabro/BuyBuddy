@@ -32,24 +32,25 @@ export class ListView {
 
             // HTML für eine Liste: Checkbox zum Abhaken, Name der Liste, Bearbeitungs- und Löschbutton
             div.innerHTML = `
-                <span class="${listClass}">
-                    <input type="checkbox" class="list-completed" data-id="${list.id}" ${list.completed ? 'checked' : ''}>
-                    <span class="list-name">${list.name}</span>
-                </span>
-             <span class="list-actions d-flex gap-2 flex-row flex-lg-column align-items-end">
-    <button class="btn btn-info btn-sm share-list d-flex align-items-center w-auto" data-id="${list.id}" title="Liste teilen">
-        <i class="bi bi-share"></i>
-    </button>
-    <button class="btn btn-warning btn-sm edit-list d-flex align-items-center w-auto" data-id="${list.id}" title="Liste bearbeiten">
-        <i class="bi bi-pencil"></i>
-    </button>
-    <button class="btn btn-danger btn-sm delete-list d-flex align-items-center w-auto" data-id="${list.id}" title="Liste löschen">
-        <i class="bi bi-trash"></i>
-    </button>
-</span>
+    <span class="${listClass}">
+        <input type="checkbox" class="list-completed" data-id="${list.id}" ${list.completed ? 'checked' : ''}>
+        <span class="list-name">${list.name}</span>
+    </span>
+    <span class="list-actions d-flex gap-2 flex-row flex-lg-column align-items-end">
+        <button class="btn btn-info btn-sm share-list d-flex justify-content-center align-items-center w-auto" data-id="${list.id}" title="Liste teilen">
+            <i class="bi bi-share"></i>
+        </button>
+        <button class="btn btn-warning btn-sm edit-list d-flex justify-content-center align-items-center w-auto" data-id="${list.id}" title="Liste bearbeiten">
+            <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-danger btn-sm delete-list d-flex justify-content-center align-items-center w-auto" data-id="${list.id}" title="Liste löschen">
+            <i class="bi bi-trash"></i>
+        </button>
+    </span>
+`;
 
-            `;
             this.listContainer.appendChild(div); // Liste zum Container hinzufügen
+
 
             // Event-Listener für das Abhaken der gesamten Liste
             const listCheckbox = div.querySelector('.list-completed');
