@@ -1,12 +1,13 @@
-import { User } from "./user.js";
-
+import { User } from "./benutzerverwaltung.js";
 export class Model {
     constructor() {
-        this.lists = [];  // Einkaufslisten
-        this.items = [];  // Artikel (jedes item hat nur EINEN Tag => item.tag)
-        this.tags = [];   // Alle vorhandenen Tags
-        this.users = [];  // Benutzer
-        this.loadData();  // JSON-Daten laden
+        this.lists = [];
+        this.items = [];
+        this.tags = [];
+        this.users = [];
+        this.sharedLists = [];
+        this.loadData();
+        this.loadUsers();
     }
 
     async loadUsers() {
