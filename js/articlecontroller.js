@@ -77,24 +77,50 @@ export class ArtikelController {
         // Klick-Event für den "Eintrag hinzufügen"-Button
         const addBtn = document.getElementById("addArticleEntry");
         if (addBtn) {
-            addBtn.addEventListener("click", () => {
+            // Entferne den automatischen Schließmechanismus, falls er im HTML gesetzt wurde
+            addBtn.removeAttribute("data-bs-dismiss");
+
+            addBtn.addEventListener("click", (event) => {
+                // Eingabefelder auslesen
                 const nameInput = document.getElementById("articleEntryName").value.trim();
                 const tagInput = document.getElementById("articleEntryTag").value;
                 const descriptionInput = document.getElementById("articleEntryDescription").value.trim();
                 const imageInput = document.getElementById("articleEntryImage").value.trim();
+                const newTagInput = document.getElementById("newTagInput").value.trim();
 
-                if (!nameInput || !tagInput || !descriptionInput) {
-                    alert("Bitte gib einen Namen, eine Beschreibung und einen Tag an.");
+                // Validierung der Eingaben
+                if (!nameInput) {
+                    alert("Bitte Namen eingeben.");
+                    return; // Modal bleibt offen
+                }
+                if (!tagInput) {
+                    alert("Bitte Tag auswählen.");
+                    return;
+                }
+                // Falls "Neuen Tag erstellen..." gewählt wurde, muss ein neuer Tag-Titel eingegeben werden.
+                if (tagInput === "new" && !newTagInput) {
+                    alert("Falls gewünschter Tag nicht gefunden, neuen Tag Titel bitte eingeben.");
+                    return;
+                }
+                if (!descriptionInput) {
+                    alert("Bitte Beschreibung eingeben.");
+                    return;
+                }
+                if (!imageInput) {
+                    alert("Bitte Bild auswählen.");
                     return;
                 }
 
-                // Neues Artikelobjekt mit EINEM Tag
+                // Falls Validierung erfolgreich – ggf. neuen Tag verwenden
+                const finalTag = tagInput === "new" ? newTagInput : tagInput;
+
+                // Neues Artikelobjekt erstellen
                 const newArticle = {
                     id: Date.now(),
                     title: nameInput,
                     description: descriptionInput,
                     image: imageInput,
-                    tag: tagInput
+                    tag: finalTag
                 };
 
                 // Artikel dem Model hinzufügen
@@ -105,11 +131,23 @@ export class ArtikelController {
 
                 // Gesamte Artikelübersicht aktualisieren
                 this.showAllArticles();
+
+                // Modal manuell schließen (Hole die Bootstrap-Instanz und schließe das Modal)
+                const modal = document.getElementById("articleEntryModal");
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                // Artikelübersichtsmodal automatisch öffnen
+                const overviewModalElement = document.getElementById("articleModal");
+                const overviewModalInstance = new bootstrap.Modal(overviewModalElement);
+                overviewModalInstance.show();
             });
+
         }
     }
 
-    showAllArticles() {
+        showAllArticles() {
         const items = this.model.getItems();
         this.artikelView.renderItemsInModal(items);
     }
@@ -145,7 +183,12 @@ export class ArtikelController {
         // Klick-Event: Artikel zur Liste hinzufügen
         const addToListBtn = document.getElementById("addToListBtn");
         if (addToListBtn) {
-            addToListBtn.addEventListener("click", () => {
+            // Entferne das automatische Schließen, falls im HTML gesetzt
+            addToListBtn.removeAttribute("data-bs-dismiss");
+
+            addToListBtn.addEventListener("click", (event) => {
+                event.preventDefault(); // Standardverhalten verhindern
+
                 const checkboxes = modal.querySelectorAll('input[type="checkbox"]:checked');
                 const selectedItems = [];
 
@@ -161,7 +204,7 @@ export class ArtikelController {
 
                 if (selectedItems.length === 0) {
                     alert("Bitte wählen Sie Artikel aus und geben Sie eine Menge an.");
-                    return;
+                    return; // Modal bleibt offen
                 }
 
                 const detailContainer = document.getElementById("detail-container");
@@ -198,6 +241,12 @@ export class ArtikelController {
                 this.model.updateList(list);
                 this.listView.renderLists(this.model.getLists());
                 this.listView.showListDetails(list, this.model.getItems());
+
+                // Modal manuell schließen, wenn alles erfolgreich war
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
             });
         }
 
@@ -229,25 +278,25 @@ export class ArtikelController {
                 const isChecked = !!this.selectedItems[item.id];
 
                 li.innerHTML = `
-                    <div class="me-2">
-                        <input type="checkbox" value="${item.id}" id="item-${item.id}"
-                            ${isChecked ? 'checked' : ''}>
-                    </div>
-                    <img src="${item.image}" alt="${item.title}"
-                         class="img-thumbnail me-2"
-                         style="max-width: 70px; max-height: 70px;">
-                    <div class="flex-grow-1">
-                        <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
-                        <div class="text-muted">${item.description}</div>
-                        <small class="text-muted">${item.tag}</small>
-                    </div>
-                    <div class="ms-3">
-                        <input type="number" id="quantity-${item.id}"
-                               value="${currentQuantity}" min="1"
-                               class="form-control form-control-sm"
-                               style="width:60px;">
-                    </div>
-                `;
+                <div class="me-2">
+                    <input type="checkbox" value="${item.id}" id="item-${item.id}"
+                        ${isChecked ? 'checked' : ''}>
+                </div>
+                <img src="${item.image}" alt="${item.title}"
+                     class="img-thumbnail me-2"
+                     style="max-width: 70px; max-height: 70px;">
+                <div class="flex-grow-1">
+                    <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
+                    <div class="text-muted">${item.description}</div>
+                    <small class="text-muted">${item.tag}</small>
+                </div>
+                <div class="ms-3">
+                    <input type="number" id="quantity-${item.id}"
+                           value="${currentQuantity}" min="1"
+                           class="form-control form-control-sm"
+                           style="width:60px;">
+                </div>
+            `;
                 articleList.appendChild(li);
 
                 // Menge ändern
