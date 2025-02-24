@@ -1,3 +1,5 @@
+// benutzerverwaltung.js
+
 export class User {
     constructor(id, name, email) {
         this.id = id;
@@ -5,7 +7,6 @@ export class User {
         this.email = email;
     }
 }
-
 
 export class SharedList {
     constructor(listId, ownerId) {
