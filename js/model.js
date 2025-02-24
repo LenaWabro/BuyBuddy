@@ -9,13 +9,18 @@ export class Model {
         this.loadData();
         this.loadUsers();
     }
-
     async loadUsers() {
         try {
             const response = await fetch("./data/user.json");
             const data = await response.json();
             this.users = data.map(user => new User(user.id, user.name, user.email));
             console.log("Benutzer geladen:", this.users);
+            // Beispiel: Setze einen Benutzer als aktuell angemeldeten Benutzer
+            // (In einer echten App erfolgt das über ein Login-Formular)
+            if (this.users.length > 0) {
+                this.currentUser = this.users[0]; // Beispiel: erster Benutzer als currentUser
+                console.log("Aktueller Benutzer:", this.currentUser);
+            }
         } catch (error) {
             console.error("Fehler beim Laden der Benutzer:", error);
         }
