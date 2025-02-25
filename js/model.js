@@ -1,24 +1,26 @@
-import { User } from "./benutzerverwaltung.js";
+// models/model.js
+import { User } from "./benutzerverwaltung.js"; // Passe ggf. den Pfad an
+
 export class Model {
     constructor() {
         this.lists = [];
         this.items = [];
-        this.tags = [];
+        // Setze die Standard-Tags einmalig
+        this.tags = ["Obst", "Gemüse", "Milchprodukt", "Backware"];
         this.users = [];
         this.sharedLists = [];
         this.loadData();
         this.loadUsers();
     }
+
     async loadUsers() {
         try {
             const response = await fetch("./data/user.json");
             const data = await response.json();
             this.users = data.map(user => new User(user.id, user.name, user.email));
             console.log("Benutzer geladen:", this.users);
-            // Beispiel: Setze einen Benutzer als aktuell angemeldeten Benutzer
-            // (In einer echten App erfolgt das über ein Login-Formular)
             if (this.users.length > 0) {
-                this.currentUser = this.users[0]; // Beispiel: erster Benutzer als currentUser
+                this.currentUser = this.users[0];
                 console.log("Aktueller Benutzer:", this.currentUser);
             }
         } catch (error) {
@@ -32,8 +34,7 @@ export class Model {
             const data = await response.json();
             this.lists = data.lists;
             this.items = data.items;
-            // Da jedes item nur EINEN Tag (String) hat, passen wir extractTags entsprechend an:
-            this.extractTags();
+            this.extractTags(); // Aktualisiere die Tags basierend auf den Artikeln
             document.dispatchEvent(new Event("dataLoaded"));
         } catch (error) {
             console.error("Fehler beim Laden der Daten:", error);
@@ -41,26 +42,25 @@ export class Model {
     }
 
     extractTags() {
-        // Standard-Default-Tags – diese sollen immer vorhanden sein
-        const defaultTags = ["Obst", "Gemüse", "Milchprodukt", "Backware"];
-        // Extrahiere alle Tags aus den Artikeln
+        // Extrahiere die Tags aus den Artikeln und füge nur neue Tags hinzu
         const itemTags = this.items.map(item => item.tag);
-        // Kombiniere Default-Tags und Artikel-Tags, ohne Duplikate
-        this.tags = [...new Set([...defaultTags, ...itemTags])];
+        const uniqueItemTags = [...new Set(itemTags)];
+        uniqueItemTags.forEach(tag => {
+            if (!this.tags.includes(tag)) {
+                this.tags.push(tag);
+            }
+        });
     }
 
     deleteTag(tagName) {
-        // Prüfen, ob mindestens ein Artikel diesen Tag verwendet:
         const isUsed = this.items.some(item => item.tag === tagName);
         if (isUsed) {
             alert("Dieser Tag wird noch von einem Artikel verwendet und kann daher nicht gelöscht werden.");
             return;
         }
-        // Andernfalls Tag aus dem Array entfernen:
         this.tags = this.tags.filter(tag => tag !== tagName);
         document.dispatchEvent(new Event("tagsUpdated"));
     }
-
 
     getItems() {
         return this.items;
@@ -83,8 +83,9 @@ export class Model {
     }
 
     deleteList(id) {
-        this.lists = this.lists.filter(list => list.id !== id); // Entfernt die Liste mit der entsprechenden ID
+        this.lists = this.lists.filter(list => list.id !== id);
     }
+
     updateItems(updatedItems) {
         updatedItems.forEach(updatedItem => {
             const list = this.lists.find(l => l.id === updatedItem.listId);
@@ -97,19 +98,11 @@ export class Model {
         });
     }
 
-
-    /**
-     * Filtert Artikel nach Tag (String).
-     * Wenn kein Tag angegeben wird, gibt es alle Artikel zurück.
-     */
     getItemsByTag(tag) {
         if (!tag) return this.items;
         return this.items.filter(item => item.tag === tag);
     }
 
-    /**
-     * Fügt einen neuen Tag hinzu, falls er noch nicht existiert.
-     */
     addTag(tagName) {
         if (!this.tags.includes(tagName)) {
             this.tags.push(tagName);
@@ -117,19 +110,12 @@ export class Model {
         }
     }
 
-    /**
-     * Fügt einen neuen Artikel hinzu (nur EIN Tag möglich).
-     */
     addArticle(article) {
-        this.items.unshift(article); // Artikel am Anfang einfügen
-        this.saveItems();            // Im Local Storage speichern (optional)
-        this.extractTags();          // Tags aktualisieren
+        this.items.unshift(article);
+        this.saveItems();
+        this.extractTags();
     }
 
-
-    /**
-     * Speichert Artikel in den Local Storage (optional).
-     */
     saveItems() {
         localStorage.setItem('articles', JSON.stringify(this.items));
     }
