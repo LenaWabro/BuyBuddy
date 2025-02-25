@@ -40,9 +40,3 @@ window.addEventListener('wheel', function (event) {
 document.querySelector('.start').addEventListener('click', function () {
     window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
 });
-
-
-
-
-
-

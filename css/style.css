@@ -24,8 +24,6 @@
     gap: 20px; /* Abstand zwischen Bild und Text*/
 }
 
-
-
 .start img {
     width: 300px;
     height: auto;
@@ -302,5 +300,7 @@ h2 {
 .list-actions .btn i {
     pointer-events: none; /* Verhindert, dass das Icon selbst Klick-Events blockiert */
 }
+
+
 
 

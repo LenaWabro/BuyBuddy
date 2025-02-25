@@ -147,7 +147,7 @@ export class ArtikelController {
         }
     }
 
-        showAllArticles() {
+    showAllArticles() {
         const items = this.model.getItems();
         this.artikelView.renderItemsInModal(items);
     }
