@@ -104,27 +104,30 @@ export class ListView {
         // Speichere die aktuell gezeigte Listen-ID im Detailcontainer
         this.detailContainer.dataset.currentlistid = list.id;
         this.detailContainer.innerHTML = `
-            <h2>${list.name} - Status: ${listCompletionStatus}</h2>
-            <ul class="list-group">
-                ${list.items.map(itemRef => {
+        <h2>${list.name} - Status: ${listCompletionStatus}</h2>
+        <ul class="list-group">
+            ${list.items.map(itemRef => {
             const item = items.find(i => i.id === itemRef.id);
             if (!item) return "";
             return `
-                        <li class="list-group-item">
-                            <label>
-                                <input type="checkbox" data-id="${itemRef.id}" ${itemRef.checked ? 'checked' : ''}>
-                                ${item.title} - Menge: ${itemRef.quantity}
-                            </label>
-                        </li>
-                    `;
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <label>
+                            <input type="checkbox" data-id="${itemRef.id}" ${itemRef.checked ? 'checked' : ''}>
+                            ${item.title} - Menge: ${itemRef.quantity}
+                        </label>
+                        <button class="btn btn-danger btn-sm delete-article-from-list" data-id="${itemRef.id}" title="Artikel aus Liste entfernen">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </li>
+                `;
         }).join("")}
-            </ul>
-            <button id="openModalBtn" class="btn article-overview" data-bs-toggle="modal" data-bs-target="#articleModal">
-                <i class="bi bi-bag-plus-fill"></i>
-            </button>
-        `;
+        </ul>
+        <button id="openModalBtn" class="btn article-overview" data-bs-toggle="modal" data-bs-target="#articleModal">
+            <i class="bi bi-bag-plus-fill"></i>
+        </button>
+    `;
 
-        // Event-Listener für einzelne Artikel-Checkboxen in der Detailansicht
+        // Event-Listener für die einzelnen Artikel-Checkboxen in der Detailansicht
         list.items.forEach(itemRef => {
             const checkbox = this.detailContainer.querySelector(`input[data-id="${itemRef.id}"]`);
             if (checkbox) {
@@ -134,13 +137,28 @@ export class ListView {
                     list.completed = list.items.every(i => i.checked);
                     console.log("Artikel-Checkbox geändert:", itemRef);
 
-                    // ggf. im Model speichern
+                    // Im Model speichern und die Ansichten aktualisieren
                     this.model.updateList(list);
                     this.renderLists(this.model.lists);
                     this.showListDetails(list, items);
                 });
             }
         });
+
+        // Event-Listener für die Löschbuttons in der Detailansicht
+        const deleteButtons = this.detailContainer.querySelectorAll(".delete-article-from-list");
+        deleteButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const articleId = parseInt(btn.getAttribute("data-id"));
+                if (confirm("Möchten Sie den Artikel wirklich aus der Liste entfernen?")) {
+                    // Entferne den Artikel aus der Liste
+                    list.items = list.items.filter(itemRef => itemRef.id !== articleId);
+                    // Liste im Model aktualisieren und Detailansicht neu rendern
+                    this.model.updateList(list);
+                    this.showListDetails(list, items);
+                }
+            });
+        });
+
     }
 }
-//PUSH TEST

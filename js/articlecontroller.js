@@ -7,7 +7,136 @@ export class ArtikelController {
         // Initialisiert alle Events
         this.setupModalEvents();
         this.setupModalEventsForNewArticle();
+        this.setupArticleEditAndDeleteEvents(); // Neu: Event Delegation für Edit & Delete
+        this.setupEditArticleSave();
     }
+
+    setupArticleEditAndDeleteEvents() {
+        const articleList = document.getElementById("articleList");
+        if (!articleList) return;
+
+        articleList.addEventListener("click", (event) => {
+            const editBtn = event.target.closest(".edit-article");
+            if (editBtn) {
+                const articleId = parseInt(editBtn.getAttribute("data-id"));
+                this.openEditArticleModal(articleId);
+            }
+            const deleteBtn = event.target.closest(".delete-article");
+            if (deleteBtn) {
+                const articleId = parseInt(deleteBtn.getAttribute("data-id"));
+                this.deleteArticleWithConfirmation(articleId);
+            }
+        });
+    }
+
+    openEditArticleModal(articleId) {
+        const article = this.model.getItems().find(item => item.id === articleId);
+        if (!article) return;
+        // Vorbefüllung der Edit-Felder
+        document.getElementById("editArticleId").value = article.id;
+        document.getElementById("editArticleName").value = article.title;
+        document.getElementById("editArticleDescription").value = article.description;
+        document.getElementById("editArticleImage").value = article.image;
+        const preview = document.getElementById("editArticleImagePreview");
+        preview.src = article.image;
+        preview.style.display = article.image ? "block" : "none";
+        document.getElementById("editArticleTag").value = article.tag;
+        document.getElementById("editNewTagContainer").style.display = "none";
+
+        // Öffnen des Edit-Modals
+        const modalEl = document.getElementById("articleEditModal");
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+
+    deleteArticleWithConfirmation(articleId) {
+        // Prüfen, ob der Artikel in irgendeiner Liste verwendet wird
+        const isUsed = this.model.lists.some(list => list.items.some(item => item.id === articleId));
+        if (isUsed) {
+            alert("Dieser Artikel wird noch in einer Liste verwendet und kann daher nicht gelöscht werden.");
+            return;
+        }
+        if (confirm("Möchtest du diesen Artikel wirklich löschen?")) {
+            this.model.deleteArticle(articleId);
+            this.artikelView.renderItemsInModal(this.model.getItems());
+        }
+    }
+
+    // Eventlistener für den "Speichern"-Button im Edit-Modal
+    setupEditArticleSave() {
+        // Eventlistener für den "Neuen Tag bestätigen"-Button im Bearbeitungsmodal
+        const confirmEditNewTagBtn = document.getElementById("confirmEditNewTag");
+        const editNewTagInput = document.getElementById("editNewTagInput");
+        if (confirmEditNewTagBtn) {
+            confirmEditNewTagBtn.addEventListener("click", () => {
+                const newTag = editNewTagInput.value.trim();
+                if (!newTag) {
+                    alert("Bitte neuen Tag eingeben.");
+                    return;
+                }
+                // Neuen Tag im Model anlegen
+                this.model.addTag(newTag);
+
+                // Neuen Option-Element im Select hinzufügen
+                const editArticleTagSelect = document.getElementById("editArticleTag");
+                const newOption = document.createElement("option");
+                newOption.value = newTag;
+                newOption.textContent = newTag;
+                // Füge den neuen Tag vor der "new"-Option ein
+                const newTagOption = editArticleTagSelect.querySelector('option[value="new"]');
+                editArticleTagSelect.insertBefore(newOption, newTagOption);
+                // Setze den Select-Wert auf den neuen Tag
+                editArticleTagSelect.value = newTag;
+
+                // Eingabefeld zurücksetzen und Container ausblenden
+                editNewTagInput.value = "";
+                document.getElementById("editNewTagContainer").style.display = "none";
+            });
+        }
+
+        const saveEditArticleBtn = document.getElementById("saveEditArticle");
+        saveEditArticleBtn.addEventListener("click", () => {
+            const id = parseInt(document.getElementById("editArticleId").value);
+            const title = document.getElementById("editArticleName").value.trim();
+            const description = document.getElementById("editArticleDescription").value.trim();
+            const image = document.getElementById("editArticleImage").value.trim();
+            let tag = document.getElementById("editArticleTag").value;
+            if (tag === "new") {
+                const newTag = document.getElementById("editNewTagInput").value.trim();
+                if (!newTag) {
+                    alert("Bitte neuen Tag eingeben.");
+                    return;
+                }
+                tag = newTag;
+                this.model.addTag(newTag);
+            }
+            if (!title || !description || !image || !tag) {
+                alert("Bitte alle Felder ausfüllen.");
+                return;
+            }
+            const updatedArticle = { id, title, description, image, tag };
+            this.model.updateArticle(updatedArticle);
+            this.artikelView.renderItemsInModal(this.model.getItems());
+            const modalEl = document.getElementById("articleEditModal");
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+        });
+
+        // Zeige/neuer Tag-Eingabebereich im Edit-Modal
+        const editArticleTagSelect = document.getElementById("editArticleTag");
+        editArticleTagSelect.addEventListener("change", () => {
+            if (editArticleTagSelect.value === "new") {
+                document.getElementById("editNewTagContainer").style.display = "block";
+                document.getElementById("editNewTagInput").focus();
+            } else {
+                document.getElementById("editNewTagContainer").style.display = "none";
+            }
+        });
+    }
+
+
+
+
 
     setupModalEventsForNewArticle() {
         const modal = document.getElementById("articleEntryModal");
@@ -278,25 +407,34 @@ export class ArtikelController {
                 const isChecked = !!this.selectedItems[item.id];
 
                 li.innerHTML = `
-                <div class="me-2">
-                    <input type="checkbox" value="${item.id}" id="item-${item.id}"
-                        ${isChecked ? 'checked' : ''}>
-                </div>
-                <img src="${item.image}" alt="${item.title}"
-                     class="img-thumbnail me-2"
-                     style="max-width: 70px; max-height: 70px;">
-                <div class="flex-grow-1">
-                    <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
-                    <div class="text-muted">${item.description}</div>
-                    <small class="text-muted">${item.tag}</small>
-                </div>
-                <div class="ms-3">
-                    <input type="number" id="quantity-${item.id}"
-                           value="${currentQuantity}" min="1"
-                           class="form-control form-control-sm"
-                           style="width:60px;">
-                </div>
-            `;
+  <div class="me-2">
+      <input type="checkbox" value="${item.id}" id="item-${item.id}"
+          ${isChecked ? 'checked' : ''}>
+  </div>
+  <img src="${item.image}" alt="${item.title}"
+       class="img-thumbnail me-2"
+       style="max-width: 70px; max-height: 70px;">
+  <div class="flex-grow-1">
+      <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
+      <div class="text-muted">${item.description}</div>
+      <small class="text-muted">${item.tag}</small>
+  </div>
+  <div class="ms-3">
+      <input type="number" id="quantity-${item.id}"
+             value="${currentQuantity}" min="1"
+             class="form-control form-control-sm"
+             style="width:60px;">
+  </div>
+  <div class="ms-3 d-flex flex-column">
+      <button class="btn btn-warning btn-sm edit-article mb-1" data-id="${item.id}" title="Artikel bearbeiten">
+          <i class="bi bi-pencil"></i>
+      </button>
+      <button class="btn btn-danger btn-sm delete-article" data-id="${item.id}" title="Artikel löschen">
+          <i class="bi bi-trash"></i>
+      </button>
+  </div>
+`;
+
                 articleList.appendChild(li);
 
                 // Menge ändern

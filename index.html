@@ -48,8 +48,8 @@
 
 
 <!-- Modal für die Artikelübersicht -->
-<div class="modal fade" id="articleModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade modal-lg" id="articleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header article-overview">
                 <h5 class="modal-title" id="articleModalLabel">
@@ -60,7 +60,7 @@
             <div class="modal-body" id="modal-container">
                 <div class="mb-3">
                     <label for="newProductTag" class="form-label">Wähle einen Tag aus, um dein gewünschtes Produkt zu
-                        suchen</label>
+                        suchen</label><button class="btn btn-outline-secondary" id="openTagManagement">Tags verwalten</button>
                     <select class="form-select" id="newProductTag" required>
                         <option value="">Alle anzeigen</option>
                         <option value="Obst">Obst</option>
@@ -76,6 +76,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addToListBtn">Zur Liste
                     hinzufügen
+
                 </button>
 
                 <div class="article-not-found">
@@ -225,6 +226,73 @@
         </div>
     </div>
 </div>
+
+<!-- Modal zum Bearbeiten eines Artikels -->
+<div class="modal fade" id="articleEditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Artikel bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editArticleId">
+                <div class="mb-3">
+                    <label for="editArticleName" class="form-label">Name</label>
+                    <input type="text" id="editArticleName" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="editArticleTag" class="form-label">Tag</label>
+                    <select id="editArticleTag" class="form-select">
+                        <option value="">Wähle einen Tag</option>
+                        <option value="Obst">Obst</option>
+                        <option value="Gemüse">Gemüse</option>
+                        <option value="Milchprodukt">Milchprodukte</option>
+                        <option value="Backware">Backwaren</option>
+                        <option value="new">Neuen Tag erstellen...</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="editNewTagContainer" style="display: none;">
+                    <input type="text" id="editNewTagInput" class="form-control" placeholder="Neuen Tag eingeben">
+                    <button id="confirmEditNewTag" class="btn btn-primary mt-2">Hinzufügen</button>
+                </div>
+                <div class="mb-3">
+                    <label for="editArticleDescription" class="form-label">Beschreibung</label>
+                    <input type="text" id="editArticleDescription" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="editArticleImage" class="form-label">Bild URL</label>
+                    <input type="text" id="editArticleImage" class="form-control" placeholder="Gib die URL des Bildes ein">
+                </div>
+                <img id="editArticleImagePreview" src="" alt="Bildvorschau" style="max-width:100px; max-height:100px; display:none;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="saveEditArticle">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal zur Tag-Verwaltung -->
+<div class="modal fade" id="tagManagementModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tags verwalten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="tagList" class="list-group"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 <!-- Bootstrap JS -->

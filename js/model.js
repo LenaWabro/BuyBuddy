@@ -40,10 +40,27 @@ export class Model {
         }
     }
 
-    // Wenn jedes Item nur EINEN Tag (String) hat, extrahieren wir die Tags so:
     extractTags() {
-        this.tags = [...new Set(this.items.map(item => item.tag))];
+        // Standard-Default-Tags – diese sollen immer vorhanden sein
+        const defaultTags = ["Obst", "Gemüse", "Milchprodukt", "Backware"];
+        // Extrahiere alle Tags aus den Artikeln
+        const itemTags = this.items.map(item => item.tag);
+        // Kombiniere Default-Tags und Artikel-Tags, ohne Duplikate
+        this.tags = [...new Set([...defaultTags, ...itemTags])];
     }
+
+    deleteTag(tagName) {
+        // Prüfen, ob mindestens ein Artikel diesen Tag verwendet:
+        const isUsed = this.items.some(item => item.tag === tagName);
+        if (isUsed) {
+            alert("Dieser Tag wird noch von einem Artikel verwendet und kann daher nicht gelöscht werden.");
+            return;
+        }
+        // Andernfalls Tag aus dem Array entfernen:
+        this.tags = this.tags.filter(tag => tag !== tagName);
+        document.dispatchEvent(new Event("tagsUpdated"));
+    }
+
 
     getItems() {
         return this.items;
@@ -117,4 +134,15 @@ export class Model {
         localStorage.setItem('articles', JSON.stringify(this.items));
     }
 
+    deleteArticle(articleId) {
+        this.items = this.items.filter(item => item.id !== articleId);
+        this.extractTags();
+        this.saveItems();
+    }
+
+    updateArticle(updatedArticle) {
+        this.items = this.items.map(item => item.id === updatedArticle.id ? updatedArticle : item);
+        this.extractTags();
+        this.saveItems();
+    }
 }
