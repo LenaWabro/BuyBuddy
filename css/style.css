@@ -285,21 +285,91 @@ h2 {
     color: #fff;
 }
 
-.article-not-found {
-    margin-top: 26px; /* Abstand nach oben */
-}
 
 .list-actions .btn {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: auto; /* Stellt sicher, dass der Button nicht unnötig verkleinert wird */
-    padding: 8px 12px; /* Kann angepasst werden, um das Klick-Ziel zu vergrößern */
+    width: auto;
 }
+
+
 
 .list-actions .btn i {
     pointer-events: none; /* Verhindert, dass das Icon selbst Klick-Events blockiert */
 }
+/* ===== Angepasstes Farbkonzept für den Modal ===== */
+
+/* Modal Header in dezenten Grautönen */
+#articleModal .modal-header {
+    background-color: var(--border-gray);
+    color:black;
+    padding: 20px;
+    border-bottom: none;
+}
+
+
+
+#articleModal .modal-footer .btn:hover,
+#articleModal .modal-body #openTagManagement:hover {
+    background-color: #d0d0d0;
+}
+
+/* Wichtige Buttons: "Zur Liste hinzufügen" und "Neuen Artikeleintrag erstellen" */
+#addToListBtn,
+#add-article-entry {
+    background-color: var(--top-blue);
+    color: #fff;
+    border: none;
+}
+
+#addToListBtn:hover,
+#add-article-entry:hover {
+    background-color: #4a7bb7;
+}
+
+/* "Gewünschter Artikel nicht gefunden?" Link in neutralem Grau */
+.article-not-found{
+    padding-top: 24px;
+}
+
+/* ===== Beibehaltung der Layout-Anpassungen ===== */
+
+
+
+/* "Tags verwalten" Button weiter nach unten rücken */
+#articleModal .modal-body #openTagManagement {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+/* Footer-Anpassungen */
+#articleModal .modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-gray);
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+/* "Gewünschter Artikel nicht gefunden?" Link zentral positionieren */
+#articleModal .article-not-found {
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* "Neuen Artikeleintrag erstellen" Button als Vollbreiten-Button – klar unterhalb des Links */
+#articleModal .modal-footer #add-article-entry {
+    width: 100%;
+    margin-top: 10px;
+}
+
+
+
 
 
 
