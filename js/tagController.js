@@ -1,4 +1,3 @@
-// controllers/tagController.js
 import { TagView } from "./tagView.js";
 
 export class TagController {
@@ -50,6 +49,11 @@ export class TagController {
                 tagModal.show();
             });
         }
+
+        // Event-Listener für das Löschen eines Tags
+        document.addEventListener("deleteTag", (event) => {
+            this.deleteTag(event.detail.tagName);
+        });
     }
 
     addTag(tagName) {
@@ -57,8 +61,16 @@ export class TagController {
     }
 
     deleteTag(tagName) {
+        // Bestätigungsabfrage NUR hier!
         if (confirm(`Möchten Sie den Tag "${tagName}" wirklich löschen?`)) {
             this.model.deleteTag(tagName);
+
+            // Modal "Tag Management" schließen
+            const tagModalEl = document.getElementById("tagManagementModal");
+            if (tagModalEl) {
+                const tagModal = bootstrap.Modal.getOrCreateInstance(tagModalEl);
+                tagModal.hide();
+            }
         }
     }
 }

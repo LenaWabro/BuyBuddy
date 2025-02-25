@@ -1,6 +1,5 @@
 export class TagView {
     constructor(model) {
-        // Wir speichern hier das Model, um auf model.tags zugreifen zu können
         this.model = model;
     }
 
@@ -41,14 +40,13 @@ export class TagView {
                 li.className = "list-group-item d-flex justify-content-between align-items-center";
                 li.textContent = tag;
 
+                // Bootstrap-Icon für das Löschen
                 const deleteBtn = document.createElement("button");
                 deleteBtn.className = "btn btn-danger btn-sm";
-                deleteBtn.textContent = "Löschen";
+                deleteBtn.innerHTML = `<i class="bi bi-trash"></i>`; // Bootstrap Trash Icon
 
                 deleteBtn.addEventListener("click", () => {
-                    if (confirm(`Möchten Sie den Tag "${tag}" wirklich löschen?`)) {
-                        this.model.deleteTag(tag);
-                    }
+                    document.dispatchEvent(new CustomEvent("deleteTag", { detail: { tagName: tag } }));
                 });
 
                 li.appendChild(deleteBtn);
