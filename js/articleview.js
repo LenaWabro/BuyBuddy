@@ -2,7 +2,6 @@
 export class ArticleView {
     constructor() {
         this.articleList = document.getElementById("articleList");
-        this.articleContainer = document.getElementById("article-container");
     }
 
     renderItemsInModal(items) {

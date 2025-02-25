@@ -111,7 +111,7 @@ export class ArticleController {
                 return;
             }
 
-            const updatedArticle = { id, title, description, image, tag };
+            const updatedArticle = {id, title, description, image, tag};
             this.model.updateArticle(updatedArticle);
 
             this.articleView.renderItemsInModal(this.model.getItems());
@@ -284,7 +284,7 @@ export class ArticleController {
                     const quantityInput = modal.querySelector(`#quantity-${itemId}`);
                     const quantity = parseInt(quantityInput.value);
                     if (!isNaN(quantity) && quantity > 0) {
-                        selectedItems.push({ id: itemId, quantity });
+                        selectedItems.push({id: itemId, quantity});
                     }
                 });
 
@@ -310,7 +310,7 @@ export class ArticleController {
                     } else {
                         const newItem = this.model.getItems().find(i => i.id === item.id);
                         if (newItem) {
-                            list.items.push({ ...newItem, quantity: item.quantity, checked: false });
+                            list.items.push({...newItem, quantity: item.quantity, checked: false});
                         }
                     }
                 });
