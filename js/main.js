@@ -1,3 +1,4 @@
+// main.js
 import { Model } from "./model.js";
 import { ListView } from "./listView.js";
 import { ArticleView } from "./articleView.js";
@@ -5,16 +6,24 @@ import { TagController } from "./tagController.js";
 import { ListController } from "./listController.js";
 import { ArticleController } from "./articleController.js";
 
-let lastScrollPosition = 0;
-
 document.addEventListener("DOMContentLoaded", () => {
+    // Observer als Funktion
     const model = new Model();
+    model.addObserver((eventName, data) => {
+        if (eventName === "dataLoaded") {
+            console.log("Daten wurden geladen:", data);
+        }
+        if (eventName === "tagsUpdated") {
+            console.log("Tags wurden aktualisiert:", data.tags);
+        }
+    });
+
     const listView = new ListView(model);
     const articleView = new ArticleView();
 
     new ListController(model, listView);
     new ArticleController(model, articleView, listView);
-    new TagController(model); // TagController wird hier eingebunden und initialisiert die TagView
+    new TagController(model); // TagController initialisiert auch die TagView
 
     document.addEventListener("dataLoaded", () => {
         listView.renderLists(model.lists);
@@ -23,6 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     listView.showListOverview();
 });
+
+
+
+let lastScrollPosition = 0;
 
 window.addEventListener('wheel', function (event) {
     const isOnTopScreen = window.scrollY < window.innerHeight;

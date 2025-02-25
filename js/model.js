@@ -1,19 +1,39 @@
 // models/model.js
-import { User } from "./benutzerverwaltung.js"; // Passe ggf. den Pfad an
-
+import { User } from "./benutzerverwaltung.js";
 export class Model {
     constructor() {
         this.lists = [];
         this.items = [];
-        // Setze die Standard-Tags einmalig
         this.tags = ["Obst", "Gemüse", "Milchprodukt", "Backware"];
         this.users = [];
         this.sharedLists = [];
+        // Observer-Array hinzufügen
+        this.observers = [];
         this.loadData();
         this.loadUsers();
     }
 
-    async loadUsers() {
+    addObserver(observer) {
+        this.observers.push(observer);
+    }
+
+    notifyObservers(eventName, data) {
+        console.log("Observer benachrichtigen",this.lists);
+        this.observers.forEach(observer => {
+            // Hier kannst du definieren, ob ein Observer eine Funktion ist oder ein Objekt mit einer notify-Methode
+            if (typeof observer === 'function') {
+                observer(eventName, data);
+            } else if (observer.notify && typeof observer.notify === 'function') {
+                observer.notify(eventName, data);
+            }
+        });
+    }
+    // Alle Observer benachrichtigen
+    notify(data) {
+        this.observers.forEach(observer => observer(data));
+    }
+
+async loadUsers() {
         try {
             const response = await fetch("./data/user.json");
             const data = await response.json();
@@ -34,12 +54,19 @@ export class Model {
             const data = await response.json();
             this.lists = data.lists;
             this.items = data.items;
-            this.extractTags(); // Aktualisiere die Tags basierend auf den Artikeln
+            this.extractTags();
+
+            // Observer benachrichtigen
+            this.notifyObservers("dataLoaded", { lists: this.lists, items: this.items });
+
+            // +++ WICHTIG: DOM-Event auslösen, damit main.js den Listener ausführt +++
             document.dispatchEvent(new Event("dataLoaded"));
         } catch (error) {
             console.error("Fehler beim Laden der Daten:", error);
         }
     }
+
+
 
     extractTags() {
         // Extrahiere die Tags aus den Artikeln und füge nur neue Tags hinzu
@@ -50,6 +77,7 @@ export class Model {
                 this.tags.push(tag);
             }
         });
+        this.notifyObservers();
     }
 
     deleteTag(tagName) {
@@ -60,6 +88,7 @@ export class Model {
         }
         this.tags = this.tags.filter(tag => tag !== tagName);
         document.dispatchEvent(new Event("tagsUpdated"));
+        this.notifyObservers();
     }
 
     getItems() {
@@ -76,6 +105,7 @@ export class Model {
 
     addList(newList) {
         this.lists.push(newList);
+        this.notifyObservers();
     }
 
     updateList(updatedList) {
@@ -84,6 +114,8 @@ export class Model {
 
     deleteList(id) {
         this.lists = this.lists.filter(list => list.id !== id);
+        console.log("Liste löschen");
+        this.notifyObservers();
     }
 
     updateItems(updatedItems) {
@@ -96,6 +128,7 @@ export class Model {
                 }
             }
         });
+        this.notifyObservers();
     }
 
     getItemsByTag(tag) {
@@ -108,16 +141,19 @@ export class Model {
             this.tags.push(tagName);
             document.dispatchEvent(new Event("tagsUpdated"));
         }
+        this.notifyObservers();
     }
 
     addArticle(article) {
         this.items.unshift(article);
         this.saveItems();
         this.extractTags();
+        this.notifyObservers();
     }
 
     saveItems() {
         localStorage.setItem('articles', JSON.stringify(this.items));
+        this.notifyObservers();
     }
 
     deleteArticle(articleId) {
