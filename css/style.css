@@ -12,6 +12,7 @@
    Hauptlayout: Grid-Layout für Listen- & Detailansicht
       - Desktop (ab 1025px): 2-Spalten-Layout
       - Tablet & Mobile (≤1024px): 1-Spalten-Layout
+      für größere Tablets gleiche Ansicht wie mobile
    ========================================================================== */
 .main-content {
     display: grid;

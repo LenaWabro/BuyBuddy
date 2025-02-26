@@ -44,7 +44,7 @@ export class ListController {
                             this.listView.showListDetails(activeList, this.model.getItems());
                         }
                     }
-                
+
                 }
             });
         }

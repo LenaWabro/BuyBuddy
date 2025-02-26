@@ -1,10 +1,10 @@
 // main.js
 import { Model } from "./model.js";
-import { ListView } from "./listView.js";
-import { ArticleView } from "./articleView.js";
+import { ListView } from "./listview.js";
+import { ArticleView } from "./articleview.js";
 import { TagController } from "./tagController.js";
-import { ListController } from "./listController.js";
-import { ArticleController } from "./articleController.js";
+import { ListController } from "./listcontroller.js";
+import { ArticleController } from "./articlecontroller.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Observer als Funktion

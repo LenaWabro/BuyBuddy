@@ -33,7 +33,7 @@ export class Model {
         this.observers.forEach(observer => observer(data));
     }
 
-async loadUsers() {
+    async loadUsers() {
         try {
             const response = await fetch("./data/user.json");
             const data = await response.json();
