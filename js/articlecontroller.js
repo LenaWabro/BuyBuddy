@@ -47,13 +47,38 @@ export class ArticleController {
         preview.src = article.image;
         preview.style.display = article.image ? "block" : "none";
 
-        document.getElementById("editArticleTag").value = article.tag;
-        document.getElementById("editNewTagContainer").style.display = "none";
+        // **Dropdown aktualisieren und den aktuellen Tag setzen**
+        const editArticleTag = document.getElementById("editArticleTag");
 
+        // Stelle sicher, dass die Dropdown-Optionen korrekt geladen sind
+        editArticleTag.innerHTML = `<option value="">Wähle einen Tag</option>`;
+        this.model.tags.forEach(tag => {
+            editArticleTag.innerHTML += `<option value="${tag}">${tag}</option>`;
+        });
+        editArticleTag.innerHTML += `<option value="new">Neuen Tag erstellen...</option>`;
+
+        // Setze den aktuellen Tag als ausgewählt
+        setTimeout(() => {
+            editArticleTag.value = article.tag || "";
+        }); // Kurze Verzögerung, um sicherzustellen, dass das Dropdown aktualisiert wurde
+
+        // Falls der Benutzer "Neuen Tag erstellen" auswählt, zeige das Eingabefeld
+        document.getElementById("editNewTagContainer").style.display = "none";
+        editArticleTag.addEventListener("change", () => {
+            if (editArticleTag.value === "new") {
+                document.getElementById("editNewTagContainer").style.display = "block";
+                document.getElementById("editNewTagInput").focus();
+            } else {
+                document.getElementById("editNewTagContainer").style.display = "none";
+            }
+        });
+
+        // Öffne das Modal
         const modalEl = document.getElementById("articleEditModal");
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
     }
+
 
     deleteArticleWithConfirmation(articleId) {
         const isUsed = this.model.lists.some(list => list.items.some(item => item.id === articleId));
@@ -62,8 +87,14 @@ export class ArticleController {
             return;
         }
         if (confirm("Möchtest du diesen Artikel wirklich löschen?")) {
-            this.model.deleteArticle(articleId);
-            this.articleView.renderItemsInModal(this.model.getItems());
+            const articleList = document.getElementById("articleList");
+            // Finde das li-Element des zu löschenden Artikels:
+            const liElement = articleList.querySelector(`.delete-article[data-id="${articleId}"]`).closest("li");
+            liElement.classList.add("swipe-out");
+            liElement.addEventListener("animationend", () => {
+                this.model.deleteArticle(articleId);
+                this.articleView.renderItemsInModal(this.model.getItems());
+            }, {once: true});
         }
     }
 
@@ -78,9 +109,13 @@ export class ArticleController {
                     alert("Bitte neuen Tag eingeben.");
                     return;
                 }
-                // FÜGE KEINE <option> MANUELL HINZU:
-                this.model.addTag(newTag);
 
+
+                this.model.addTag(newTag);
+                document.dispatchEvent(new Event("tagsUpdated"));
+                setTimeout(() => {
+                    document.getElementById("editArticleTag").value = newTag;
+                }, 100); // Kurze Verzögerung, um sicherzustellen, dass das Dropdown aktualisiert wurde
                 editNewTagInput.value = "";
                 document.getElementById("editNewTagContainer").style.display = "none";
             });
@@ -111,7 +146,7 @@ export class ArticleController {
                 return;
             }
 
-            const updatedArticle = {id, title, description, image, tag};
+            const updatedArticle = { id, title, description, image, tag };
             this.model.updateArticle(updatedArticle);
 
             this.articleView.renderItemsInModal(this.model.getItems());
@@ -132,6 +167,7 @@ export class ArticleController {
             }
         });
     }
+
 
     setupModalEventsForNewArticle() {
         const modal = document.getElementById("articleEntryModal");
@@ -173,16 +209,14 @@ export class ArticleController {
         confirmNewTagBtn.addEventListener("click", () => {
             const newTag = newTagInput.value.trim();
             if (newTag) {
-                // NUR INS MODEL EINFÜGEN, KEINE <option> manuell
                 this.model.addTag(newTag);
-
-                newTagInput.value = "";
+                document.dispatchEvent(new Event("tagsUpdated"));
+                tagSelect.value = newTag;
                 newTagContainer.style.display = "none";
-
-                // Optional: Filter aktualisieren
-                this.filterArticlesByTag(newTag);
+                newTagInput.value = "";
             }
         });
+
 
         // "Artikel hinzufügen"‑Button
         const addBtn = document.getElementById("addArticleEntry");
