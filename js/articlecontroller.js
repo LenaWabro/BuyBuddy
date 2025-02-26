@@ -3,66 +3,66 @@ export class ArticleController {
         this.model = model;
         this.articleView = articleView;
         this.listView = listView;
-        this.selectedItems = {};
+        this.selectedItems = {}; // leere Liste für ausgewählte Items
 
         this.setupModalEvents();
         this.setupModalEventsForNewArticle();
         this.setupArticleEditAndDeleteEvents();
         this.setupEditArticleSave();
 
-        // **Dauerhafter** Listener für "showAllArticles":
+        /**Wenn ich alle Artikel in der Übersicht laden möchte wie z. B. nach Hinzufügen eines Artikels oder beim Filter "Alle anzeigen"*/
         document.addEventListener("showAllArticles", () => {
             // Filter auf leeren Tag -> zeige alle Artikel
             this.filterArticlesByTag('');
         });
     }
 
+    /** Diese Methode reagiert nun auf mein Artikel bearbeiten und meinen Liste löschen Button */
     setupArticleEditAndDeleteEvents() {
         const articleList = document.getElementById("articleList");
         if (!articleList) return;
         articleList.addEventListener("click", (event) => {
+            // Button zum Bearbeiten
             const editBtn = event.target.closest(".edit-article");
             if (editBtn) {
-                const articleId = parseInt(editBtn.getAttribute("data-id"));
-                this.openEditArticleModal(articleId);
+                const articleId = parseInt(editBtn.getAttribute("data-id")); // holt die Data-ID des Artikels – jeder Artikel trägt eine eigene ID mit sich
+                this.openEditArticleModal(articleId); // neues Modal öffnen mit dem richtig übergebenen articleID
             }
+            // Button zum Löschen
             const deleteBtn = event.target.closest(".delete-article");
             if (deleteBtn) {
                 const articleId = parseInt(deleteBtn.getAttribute("data-id"));
-                this.deleteArticleWithConfirmation(articleId);
+                this.deleteArticleWithConfirmation(articleId); // startet die Löschfunktion
             }
         });
     }
 
+    /** Diese Methode wird aufgerufen, wenn der Bearbeiten-Button geklickt wird.
+     Sie sorgt dafür, dass das Bearbeitungs-Modal mit den richtigen Daten gefüllt und geöffnet wird.
+     Holt den richtigen Artikel basierend auf der articleId */
     openEditArticleModal(articleId) {
         const article = this.model.getItems().find(item => item.id === articleId);
         if (!article) return;
 
+        // Füllt das Bearbeitungs-Formular mit den Artikel-Daten
         document.getElementById("editArticleId").value = article.id;
         document.getElementById("editArticleName").value = article.title;
         document.getElementById("editArticleDescription").value = article.description;
         document.getElementById("editArticleImage").value = article.image;
 
+        // Zeigt das Bild unten an, falls eines existiert
         const preview = document.getElementById("editArticleImagePreview");
         preview.src = article.image;
         preview.style.display = article.image ? "block" : "none";
 
-        // **Dropdown aktualisieren und den aktuellen Tag setzen**
+        // Dropdown aktualisieren und den aktuellen Tag setzen – Delegation an die View
         const editArticleTag = document.getElementById("editArticleTag");
+        this.articleView.populateEditArticleTagDropdown(editArticleTag, this.model.tags, article.tag);
 
-        // Stelle sicher, dass die Dropdown-Optionen korrekt geladen sind
-        editArticleTag.innerHTML = `<option value="">Wähle einen Tag</option>`;
-        this.model.tags.forEach(tag => {
-            editArticleTag.innerHTML += `<option value="${tag}">${tag}</option>`;
-        });
-        editArticleTag.innerHTML += `<option value="new">Neuen Tag erstellen...</option>`;
-
-        // Setze den aktuellen Tag als ausgewählt
-        setTimeout(() => {
-            editArticleTag.value = article.tag || "";
-        }); // Kurze Verzögerung, um sicherzustellen, dass das Dropdown aktualisiert wurde
-
-        // Falls der Benutzer "Neuen Tag erstellen" auswählt, zeige das Eingabefeld
+        /** Falls der Benutzer "Neuen Tag erstellen" auswählt, zeige das Eingabefeld
+         Falls der Nutzer einen neuen Tag erstellen will ("new" ausgewählt), erscheint ein Eingabefeld.
+         Falls er einen vorhandenen Tag wählt, wird das Eingabefeld ausgeblendet.
+         */
         document.getElementById("editNewTagContainer").style.display = "none";
         editArticleTag.addEventListener("change", () => {
             if (editArticleTag.value === "new") {
@@ -79,8 +79,12 @@ export class ArticleController {
         modal.show();
     }
 
-
     deleteArticleWithConfirmation(articleId) {
+        /** this.model.lists → Holt alle Listen
+         some(list => list.items.some(item => item.id === articleId))
+         Schaut, ob in irgendeiner Liste ein Artikel mit der gleichen ID (articleId) existiert.
+         Falls der Artikel noch in einer Liste ist, wird er nicht gelöscht, sondern es erscheint eine Warnung.
+         */
         const isUsed = this.model.lists.some(list => list.items.some(item => item.id === articleId));
         if (isUsed) {
             alert("Dieser Artikel wird noch in einer Liste verwendet und kann daher nicht gelöscht werden.");
@@ -88,16 +92,26 @@ export class ArticleController {
         }
         if (confirm("Möchtest du diesen Artikel wirklich löschen?")) {
             const articleList = document.getElementById("articleList");
-            // Finde das li-Element des zu löschenden Artikels:
+            // Sucht in der Liste das richtige <li>-Element anhand der data-id.
+            // .closest("li") stellt sicher, dass das gesamte <li>-Element des Artikels gefunden wird.
             const liElement = articleList.querySelector(`.delete-article[data-id="${articleId}"]`).closest("li");
-            liElement.classList.add("swipe-out");
-            liElement.addEventListener("animationend", () => {
-                this.model.deleteArticle(articleId);
-                this.articleView.renderItemsInModal(this.model.getItems());
+            liElement.classList.add("swipe-out"); // CSS-Klasse für Animation
+            liElement.addEventListener("animationend", () => { // wartet bis Animation vorbei
+                this.model.deleteArticle(articleId); // danach wird gelöscht nach der articleId
+                this.articleView.renderItemsInModal(this.model.getItems()); // Aktualisiert die Artikel-Liste im Modal
             }, {once: true});
         }
     }
 
+    /** Diese Methode sorgt dafür, dass Änderungen an einem Artikel gespeichert werden.
+     Sie behandelt das Speichern eines neuen Tags sowie das Aktualisieren eines bestehenden Artikels.
+     * Wenn auf "Speichern" geklickt wird:
+     * Holt die Werte aus den Eingabefeldern (ID, Name, Beschreibung, Bild, Tag)
+     * Falls ein neuer Tag gewählt wurde, überprüft er, ob er eingegeben wurde
+     * Erstellt ein neues Artikel-Objekt mit den aktualisierten Daten
+     * Speichert das geänderte Objekt im Model (this.model.updateArticle(updatedArticle))
+     * Aktualisiert die Artikelansicht im Modal (this.articleView.renderItemsInModal(this.model.getItems()))
+     */
     setupEditArticleSave() {
         // Neuen Tag im Edit-Modal erstellen (Button "confirmEditNewTag")
         const confirmEditNewTagBtn = document.getElementById("confirmEditNewTag");
@@ -109,7 +123,6 @@ export class ArticleController {
                     alert("Bitte neuen Tag eingeben.");
                     return;
                 }
-
 
                 this.model.addTag(newTag);
                 document.dispatchEvent(new Event("tagsUpdated"));
@@ -125,7 +138,7 @@ export class ArticleController {
         const saveEditArticleBtn = document.getElementById("saveEditArticle");
         saveEditArticleBtn.addEventListener("click", () => {
             const id = parseInt(document.getElementById("editArticleId").value);
-            const title = document.getElementById("editArticleName").value.trim();
+            const title = document.getElementById("editArticleName").value.trim(); // entfernt alle Leerzeichen am Anfang und Ende
             const description = document.getElementById("editArticleDescription").value.trim();
             const image = document.getElementById("editArticleImage").value.trim();
             let tag = document.getElementById("editArticleTag").value;
@@ -168,18 +181,16 @@ export class ArticleController {
         });
     }
 
-
+    /** Hinzufügen eines neuen Artikels */
     setupModalEventsForNewArticle() {
         const modal = document.getElementById("articleEntryModal");
         if (!modal) return;
-
-        // Kein "showAllArticles"-Listener mehr hier rein,
-        // sondern in den Konstruktor verschieben!
 
         modal.addEventListener("shown.bs.modal", () => {
             modal.querySelector("button").focus();
         });
 
+        // Setzt alle Felder zurück, wenn das Modal geschlossen wird
         modal.addEventListener("hidden.bs.modal", () => {
             document.getElementById("add-article-entry").focus();
             document.getElementById("articleEntryName").value = "";
@@ -190,7 +201,6 @@ export class ArticleController {
         });
 
         const tagSelect = document.getElementById("articleEntryTag");
-        const filterDropdown = document.getElementById("newProductTag");
         const newTagContainer = document.getElementById("newTagContainer");
         const newTagInput = document.getElementById("newTagInput");
         const confirmNewTagBtn = document.getElementById("confirmNewTag");
@@ -216,7 +226,6 @@ export class ArticleController {
                 newTagInput.value = "";
             }
         });
-
 
         // "Artikel hinzufügen"‑Button
         const addBtn = document.getElementById("addArticleEntry");
@@ -250,6 +259,7 @@ export class ArticleController {
                     return;
                 }
 
+                // erstellt neuen Artikel mit id Date.now()
                 const finalTag = tagInput === "new" ? newTagInput : tagInput;
                 const newArticle = {
                     id: Date.now(),
@@ -263,15 +273,19 @@ export class ArticleController {
                     this.filterArticlesByTag(''); // Filter auf leeren Tag -> zeige alle Artikel
                 });
 
-
                 this.model.addArticle(newArticle);
                 document.dispatchEvent(new Event("dataLoaded"));
                 this.showAllArticles();
 
-                const modal = document.getElementById("articleEntryModal");
-                const modalInstance = bootstrap.Modal.getInstance(modal);
+                /**  Eine Instanz ist ein exemplarisches Objekt einer Klasse.
+                 Das bedeutet: Du kannst mit einer Instanz auf bestimmte Funktionen zugreifen (wie show() oder hide()).
+                 Bootstrap-Modals sind keine normalen divs, sondern spezielle Elemente, die JavaScript-gesteuert sind.
+                 Um mit ihnen zu arbeiten (sie zu öffnen oder zu schließen), muss man eine Instanz des Bootstrap-Modals erstellen.
+                 */
+                const modal = document.getElementById("articleEntryModal"); // finde das Modal
+                const modalInstance = bootstrap.Modal.getInstance(modal); // Holt die existierende Bootstrap-Instanz dieses Modals
                 if (modalInstance) {
-                    modalInstance.hide();
+                    modalInstance.hide(); // Falls es bereits eine Instanz gibt → Schließt (hide()) das Modal
                 }
                 const overviewModalElement = document.getElementById("articleModal");
                 const overviewModalInstance = new bootstrap.Modal(overviewModalElement);
@@ -280,9 +294,13 @@ export class ArticleController {
         }
     }
 
+    /** Wenn das Modal für Artikel geöffnet wird
+     Nach dem Hinzufügen eines neuen Artikels
+     Nach dem Bearbeiten oder Löschen eines Artikels */
     showAllArticles() {
-        const items = this.model.getItems();
-        this.articleView.renderItemsInModal(items);
+        const items = this.model.getItems(); // ruft alle gespeicherten Artikel ab.
+        this.articleView.renderItemsInModal(items); // renderItemsInModal(items)-Methode gehört zur articleView.
+        // Sie sorgt dafür, dass die Artikel visuell im Modal dargestellt werden.
     }
 
     setupModalEvents() {
@@ -290,9 +308,10 @@ export class ArticleController {
         if (!modal) return;
 
         modal.addEventListener("shown.bs.modal", () => {
-            modal.querySelector("button").focus();
+            modal.querySelector("button").focus(); // besser für Tastaturnutzung
         });
 
+        /** Setzt alle Checkboxen und Mengen zurück, wenn das Modal geschlossen wird */
         modal.addEventListener("hidden.bs.modal", () => {
             document.getElementById("add-list").focus();
             modal.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
@@ -305,6 +324,11 @@ export class ArticleController {
             this.filterArticlesByTag('');
         });
 
+        /** Fügt Artikel einer Liste hinzu
+         * Alle aktivierten Checkboxen werden gesammelt
+         * Die zugehörige Menge wird ausgelesen
+         * Falls kein Artikel ausgewählt wurde, erscheint eine Warnung
+         */
         const addToListBtn = document.getElementById("addToListBtn");
         if (addToListBtn) {
             addToListBtn.removeAttribute("data-bs-dismiss");
@@ -335,7 +359,8 @@ export class ArticleController {
                     return;
                 }
 
-                // Artikel hinzufügen / Menge erhöhen
+                /** Falls der Artikel schon in der Liste ist → Menge wird erhöht
+                 Falls der Artikel neu ist → Wird zur Liste hinzugefügt */
                 selectedItems.forEach(item => {
                     const existingItem = list.items.find(i => i.id === item.id);
                     if (existingItem) {
@@ -349,6 +374,10 @@ export class ArticleController {
                     }
                 });
 
+                /** Falls die Liste als "abgeschlossen" markiert war, wird sie wieder offen
+                 Die Liste wird in der Datenbank aktualisiert
+                 Die Ansicht wird aktualisiert, um die neue Liste anzuzeigen
+                 Das Modal wird geschlossen */
                 if (list.completed) {
                     list.completed = false;
                 }
@@ -364,6 +393,7 @@ export class ArticleController {
             });
         }
 
+        // Falls ein Nutzer eine Tag-Kategorie wählt, werden nur Artikel mit diesem Tag angezeigt
         const tagSelect = modal.querySelector('#newProductTag');
         if (tagSelect) {
             tagSelect.addEventListener('change', (event) => {
@@ -371,62 +401,16 @@ export class ArticleController {
             });
         }
 
+        // Hier wird nun das Filtern an die View delegiert
         this.filterArticlesByTag = (tag) => {
-            const articleList = modal.querySelector('#articleList');
-            articleList.innerHTML = '';
             let filteredItems;
             if (!tag) {
                 filteredItems = this.model.getItems();
             } else {
                 filteredItems = this.model.getItemsByTag(tag);
             }
-
-            filteredItems.forEach(item => {
-                const li = document.createElement('li');
-                li.classList.add('list-group-item', 'd-flex', 'align-items-center');
-
-                const currentQuantity = this.selectedItems[item.id] || 1;
-                const isChecked = !!this.selectedItems[item.id];
-
-                li.innerHTML = `
-                  <div class="me-2">
-                    <input type="checkbox" value="${item.id}" id="item-${item.id}" ${isChecked ? 'checked' : ''}>
-                  </div>
-                  <img src="${item.image}" alt="${item.title}" class="img-thumbnail me-2" style="max-width: 70px; max-height: 70px;">
-                  <div class="flex-grow-1">
-                    <label for="item-${item.id}" class="fw-bold mb-0">${item.title}</label>
-                    <div class="text-muted">${item.description}</div>
-                    <small class="text-muted">${item.tag}</small>
-                  </div>
-                  <div class="ms-3">
-                    <input type="number" id="quantity-${item.id}" value="${currentQuantity}" min="1"
-                      class="form-control form-control-sm" style="width:60px;">
-                  </div>
-                  <div class="ms-3 d-flex flex-column">
-                    <button class="btn btn-warning btn-sm edit-article mb-1" data-id="${item.id}" title="Artikel bearbeiten">
-                      <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-danger btn-sm delete-article" data-id="${item.id}" title="Artikel löschen">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-                `;
-                articleList.appendChild(li);
-
-                const quantityInput = li.querySelector(`#quantity-${item.id}`);
-                quantityInput.addEventListener('change', (event) => {
-                    this.selectedItems[item.id] = parseInt(event.target.value);
-                });
-
-                const checkbox = li.querySelector(`#item-${item.id}`);
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        this.selectedItems[item.id] = parseInt(quantityInput.value);
-                    } else {
-                        delete this.selectedItems[item.id];
-                    }
-                });
-            });
+            // Übergibt die gefilterten Artikel und die selektierten Items an die View
+            this.articleView.renderFilteredItems(filteredItems, this.selectedItems);
         };
     }
 }
