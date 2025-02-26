@@ -21,6 +21,8 @@ export class ListController {
                 const nameInput = document.getElementById("newListName");
                 const name = nameInput.value.trim();
                 if (name) {
+                    // Speichere die aktuell aktive Liste (falls vorhanden)
+                    const currentActiveId = this.listView.detailContainer.dataset.currentlistid;
                     const newList = {
                         id: Date.now(),
                         name,
@@ -34,6 +36,15 @@ export class ListController {
                     const addListModalEl = document.getElementById("addListModal");
                     const addListModalInstance = bootstrap.Modal.getOrCreateInstance(addListModalEl);
                     addListModalInstance.hide();
+
+                    // Falls bereits eine aktive Liste vorhanden war, neu rendern:
+                    if (currentActiveId) {
+                        const activeList = this.model.getListById(currentActiveId);
+                        if (activeList) {
+                            this.listView.showListDetails(activeList, this.model.getItems());
+                        }
+                    }
+                
                 }
             });
         }
