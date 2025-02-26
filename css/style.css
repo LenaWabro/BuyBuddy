@@ -1,4 +1,6 @@
-/* ========== Variablen für wiederkehrende Farben ========== */
+/* ==========================================================================
+   Variablen (Farben, etc.)
+   ========================================================================== */
 :root {
     --top-blue: #5e90d6;
     --light-gray: #f4f7fa;
@@ -6,167 +8,153 @@
     --bootstrap-red: #dc3545;
 }
 
-/* Styling für das Haupt-Element */
-/* Standard: Start-Screen mit 100vh für größere Bildschirme */
+/* ==========================================================================
+   Hauptlayout: Grid-Layout für Listen- & Detailansicht
+      - Desktop (ab 1025px): 2-Spalten-Layout
+      - Tablet & Mobile (≤1024px): 1-Spalten-Layout
+   ========================================================================== */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-gap: 20px;
+    padding: 26px;
+}
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
 
+/* ==========================================================================
+   Start-Screen (Desktop und mobile Anpassungen)
+   ========================================================================== */
 .start {
     position: relative;
     background-color: var(--top-blue);
     width: 100%;
     height: 100vh;
-    display: flex;
-    flex-direction: column; /* Stapelt Elemente vertikal*/
+    display: flex;           /* Zentriert den Inhalt */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 45px;
+    font-size: 45px;         /* Desktop-Schriftgröße */
     color: white;
     transition: transform 1s ease-out;
-    gap: 20px; /* Abstand zwischen Bild und Text*/
+    gap: 20px;
 }
-
 .start img {
     width: 300px;
     height: auto;
     margin-bottom: 20px;
 }
 
-/* Nur auf kleineren Bildschirmen (Handy & Tablet) */
-/*@media (max-width: 992px) {
-    .start {
-
-        align-items: center;
-        padding: 20px;
-        height: auto; /* Höhe nicht fixiert
-        font-size: 24px;
-    }
-
+/* Für Tablets (max-width: 1024px) */
+@media (max-width: 1024px) {
     .start img {
-        width: 80px; /* Kleineres Logo
-        height: auto;
-        margin-bottom: 0;
-        position: absolute;
-        top: 10px;
-        left: 10px;
+        width: 200px;
     }
 }
 
- */
+/* Für Mobile (max-width: 576px) */
+@media (max-width: 576px) {
+    .start img {
+        width: 150px;
+    }
+}
 
-/* Scroll-Indikator für große Bildschirme */
+@media (max-width: 576px) {
+    .start {
+        font-size: 24px;    /* Mobile: kleinere Schrift */
+    }
+}
 
+/* ==========================================================================
+   Scroll-Indikator
+   ========================================================================== */
 .scroll-indicator {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 20px;
+    font-size: 20px;  /* Desktop */
     color: white;
     animation: blink 1s infinite alternate;
-    justify-content: center;
-    align-items: center;
     text-align: center;
 }
-
-/* Animation für das Blinken */
 @keyframes blink {
-    0% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0.5;
-    }
+    0% { opacity: 1; }
+    100% { opacity: 0.5; }
 }
-
-/* Scroll-Indikator bei kleineren Geräten ausblenden
-@media (max-width: 767px) {
-    .scroll-indicator {
-        display: none;
-    }
-}
-
-
- */
-
-@media (max-width: 991px) {
+@media (max-width: 1024px) {
     .scroll-indicator {
         font-size: 14px;
-        bottom: 56px; /* Abstand vom unteren Rand */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-    .start img {
-        width: 200px; /* Passe die Größe nach Bedarf an */
-        height: auto;
-        margin-bottom: 20px; /* Zusätzlicher Abstand nach unten */
+        bottom: 56px;
     }
 }
 
-
-
-
+/* ==========================================================================
+   Allgemeine Einstellungen
+   ========================================================================== */
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--light-gray);
 }
-
 h4 {
     font-weight: bold;
     padding-top: 24px;
+    font-size: 1.5rem;  /* Standard für Überschriften in Bereichen */
 }
-
 h2 {
     font-size: 24px;
     color: var(--top-blue);
 }
-
-
 .btn {
     font-family: 'Montserrat', sans-serif;
 }
 
-.row {
-    padding: 26px;
-    width: 100%;
+/* ==========================================================================
+   Listenbereich (Sidebar) & Detailbereich
+   ========================================================================== */
+/* Sidebar (Desktop) */
+#list-view {
+    min-height: 100vh;
+    background-color: var(--light-gray);
+    padding: 0 20px;
+    border-right: 2px solid var(--top-blue);
 }
-
-/* Anfangszustand: Artikel leicht links außerhalb und unsichtbar */
-.slide-in {
-    opacity: 0;
-    transform: translateY(50px);
-    animation: slideIn 0.3s ease-out forwards;
+@media (max-width: 1024px) {
+    #list-view {
+        min-height: auto;
+        border-right: none;
+        border-bottom: 2px solid var(--top-blue);
+        padding: 15px;
+    }
 }
-
-/* Animation definieren */
-@keyframes slideIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
+/* Detailbereich */
+#detail-view {
+    border-top: var(--top-blue);
+    min-height: 100vh;
+}
+@media (max-width: 1024px) {
+    #detail-view {
+        min-height: 100vh;
+    }
+}
+@media (max-width: 767px) {
+    .text-overlay {
+        font-size: 0.9rem;
     }
 }
 
-
-
-/* ========== Listenbereich (Sidebar) ========== */
-
-#list-view {
-    min-height: 100vh; /* Füllt den linken Bereich auf große Höhe */
-    background-color: var(--light-gray);
-    padding-left: 20px;
-    border-right: 2px solid var(--top-blue);
+/* Mobile */
+@media (max-width: 576px) {
+    .text-overlay {
+        font-size: 0.8rem;
+    }
 }
-
-/* ========== Detailbereich ========== */
-
-#detail-view {
-    border-top: var(--top-blue);
-    min-height: 100vh; /* Füllt den rechten Bereich auf große Höhe */
-}
-
-
-/* ========== Listen-Styling ========== */
-
+/* ==========================================================================
+   Listen-Styling (Listeneinträge)
+   ========================================================================== */
 #list-view .list-group-item {
     cursor: pointer;
     padding: 15px;
@@ -174,93 +162,53 @@ h2 {
     background-color: #ffffff;
     border-radius: 6px;
     border: 1px solid var(--border-gray);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    color: black;
+}
+@media (min-width: 1025px) {
+    /* Desktop-Hover: */
+    #list-view .list-group-item:hover {
+        background-color: var(--top-blue);
+        color: white;
+        transform: translateX(5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+}
+@media (max-width: 1024px) {
+    /* Tablet & Mobile: Kein Hover, stattdessen active */
+    #list-view .list-group-item:hover {
+        background-color: #ffffff;
+        color: black;
+        box-shadow: none;
+    }
+    #list-view .list-group-item.active {
+        background-color: var(--top-blue);
+        color: white;
+    }
 }
 
-#list-view .list-group-item:hover {
-    background-color: var(--top-blue);
-    color: white;
-    transform: translateX(5px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* ========== Erledigte Items (durchgestrichen) ========== */
-
+/* Erledigte Items */
 .strikethrough {
     text-decoration: line-through;
     color: var(--bootstrap-red);
     transition: text-decoration 0.3s ease, color 0.3s ease;
 }
 
-/* ========== Responsive Feinschliff ========== */
-@media (max-width: 991px) {
-    /* Statt 2 Spalten nur 1 Spalte */
-    #list-view {
-        min-height: auto;
-        border-right: none;
-        border-bottom: 2px solid var(--top-blue);
-        box-shadow: none; /* Falls du den Schatten auf Mobile nicht willst */
-        padding: 15px;
-    }
-
-    /* Detailansicht direkt darunter, ohne großen Abstand */
-    #detail-view {
-        min-height: 100vh;
-
-    }
-}
-
-
+/* ==========================================================================
+   Mobile Anpassungen (max-width: 576px)
+   ========================================================================== */
 @media (max-width: 576px) {
-
-    .start {
-        font-size: 24px;
-    }
-
-    h4 {
-        font-size: 16px;
-    }
-
-    .list-name, .text-overlay, .list-group-item {
-        font-size: 12px;
-
-    }
-
-    .btn {
-        font-size: 12px;
-    }
-
-    #list-view {
-        padding: 10px;
-    }
-
-    #detail-view {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-
+    .start { font-size: 24px; }
+    h4 { font-size: 16px; }
+    .list-group-item { font-size: 12px; }
+    .btn { font-size: 12px; }
+    #list-view, #detail-view { padding: 10px; }
+    h1 { font-size: 2rem; }
 }
 
-
-.edit {
-    background-color: #ffc107; /* Warnfarbe von Bootstrap */
-}
-
-.delete {
-    background-color: var(--bootstrap-red);
-    color: white;
-}
-
-.newList {
-    background-color: var(--top-blue);
-    color: white;
-}
-
-
-
+/* ==========================================================================
+   Buttons, Icons & Utility
+   ========================================================================== */
 .profile-icon {
     position: absolute;
     top: 12px;
@@ -269,91 +217,56 @@ h2 {
     color: white;
     cursor: pointer;
 }
-
-.article-overview{
+.article-overview {
     background-color: var(--top-blue);
     color: white;
 }
-
-#add-list{
-    color:  var(--top-blue);
+/* Button-Stile für "add-list" und "openModalBtn" */
+#add-list, #openModalBtn {
+    color: var(--top-blue);
     border-color: var(--top-blue);
 }
-
-#add-list:hover, .btn-primary{
+#add-list:hover, #openModalBtn:hover,
+.btn-primary {
     background-color: var(--top-blue);
     color: #fff;
 }
-
-
-.list-actions .btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: auto;
+#add-list {
+    margin-top: 10px;
 }
 
-
-
-.list-actions .btn i {
-    pointer-events: none; /* Verhindert, dass das Icon selbst Klick-Events blockiert */
-}
-/* ===== Angepasstes Farbkonzept für den Modal ===== */
-
-/* Modal Header in dezenten Grautönen */
+/* ==========================================================================
+   Modal Styling – Artikelübersicht Modal
+   ========================================================================== */
 #articleModal .modal-header {
     background-color: var(--border-gray);
-    color:black;
+    color: black;
     padding: 20px;
     border-bottom: none;
 }
-
-
-
-#articleModal .modal-footer .btn:hover,
-#articleModal .modal-body #openTagManagement:hover {
-    background-color: #d0d0d0;
-}
-
-/* Wichtige Buttons: "Zur Liste hinzufügen" und "Neuen Artikeleintrag erstellen" */
 #addToListBtn,
 #add-article-entry {
     background-color: var(--top-blue);
     color: #fff;
     border: none;
 }
-
 #addToListBtn:hover,
 #add-article-entry:hover {
     background-color: #4a7bb7;
 }
-
-/* "Gewünschter Artikel nicht gefunden?" Link in neutralem Grau */
-.article-not-found{
+.article-not-found {
     padding-top: 24px;
 }
-
-/* ===== Beibehaltung der Layout-Anpassungen ===== */
-
-
-
-/* "Tags verwalten" Button weiter nach unten rücken */
 #articleModal .modal-body #openTagManagement {
     margin-top: 15px;
     margin-bottom: 20px;
 }
-
-/* Footer-Anpassungen */
 #articleModal .modal-footer {
     padding: 15px 20px;
     border-top: 1px solid var(--border-gray);
     justify-content: space-between;
     align-items: center;
 }
-
-
-
-/* "Gewünschter Artikel nicht gefunden?" Link zentral positionieren */
 #articleModal .article-not-found {
     width: 100%;
     text-align: center;
@@ -361,16 +274,175 @@ h2 {
     margin-top: 20px;
     margin-bottom: 10px;
 }
-
-/* "Neuen Artikeleintrag erstellen" Button als Vollbreiten-Button – klar unterhalb des Links */
 #articleModal .modal-footer #add-article-entry {
     width: 100%;
     margin-top: 10px;
 }
 
+/* ==========================================================================
+   Weitere Modale: Liste bearbeiten, Tag-Verwaltung, etc.
+   ========================================================================== */
+.edit {
+    background-color: #ffc107;
+}
+.delete {
+    background-color: var(--bootstrap-red);
+    color: white;
+}
+.newList {
+    background-color: var(--top-blue);
+    color: white;
+}
+.share {
+    background-color: #0dcaf0; /* Bootstrap Info-Farbe */
+    color: white;
+}
 
+/* ==========================================================================
+   Swipe-Out Animation (für das Löschen von Elementen)
+   ========================================================================== */
+@keyframes swipeOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+.swipe-out {
+    animation: swipeOut 0.5s ease-out forwards;
+}
 
+/* ==========================================================================
+   Artikelübersicht im Modal
+   ========================================================================== */
+.article-thumbnail {
+    max-width: 70px;
+    max-height: 70px;
+}
+.article-quantity {
+    width: 60px;
+}
+.article-info {
+    flex-grow: 1;
+}
 
+/* ==========================================================================
+   Modal Schriftgrößen (alle Modale)
+   Tablet (max-width: 767px) & Mobile (max-width: 576px)
+   ========================================================================== */
+@media (max-width: 767px) {
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        font-size: 1rem;
+    }
+    .modal-title {
+        font-size: 1.25rem;
+    }
+}
+@media (max-width: 576px) {
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        font-size: 0.9rem;
+    }
+    .modal-title {
+        font-size: 1rem;
+    }
+}
 
+/* ==========================================================================
+   Zusätzlicher Abstand für den Öffnen-Button
+   ========================================================================== */
+#openModalBtn {
+    margin-top: 20px;
+}
 
+/* ==========================================================================
+   Anpassung von h2 und .form-select für Tablet und Mobile
+   ========================================================================== */
+@media (max-width: 767px) {
+    h2{
+        font-size: 20px; /* Tablet */
+    }
+    .form-select {
+        font-size: 0.9rem;
+    }
+}
+@media (max-width: 576px) {
+    h2 {
+        font-size: 18px; /* Mobile */
+    }
+    .form-select {
+        font-size: 0.8rem;
+    }
+}
 
+/* ==========================================================================
+   Gemeinsames Modal-Styling für "Neuen Artikel hinzufügen" & "Artikel bearbeiten"
+   ========================================================================== */
+#articleEntryModal .modal-header,
+#articleEditModal .modal-header {
+    background-color: var(--border-gray);
+    color: black;
+    padding: 30px;
+    border-bottom: none;
+}
+#articleEntryModal .modal-body,
+#articleEditModal .modal-body {
+    padding: 30px;
+    background-color: #fff;
+    color: #333;
+}
+#articleEntryModal .modal-body label,
+#articleEditModal .modal-body label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #555;
+}
+#articleEntryModal .modal-body input[type="text"],
+#articleEditModal .modal-body input[type="text"],
+#articleEntryModal .modal-body select,
+#articleEditModal .modal-body select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-gray);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    background-color: #f0f0f0;
+    color: #333;
+}
+#articleEntryModal .modal-body img,
+#articleEditModal .modal-body img {
+    max-width: 100px;
+    max-height: 100px;
+    display: block;
+    margin-top: 15px;
+}
+#articleEntryModal .modal-footer,
+#articleEditModal .modal-footer {
+    background-color: var(--border-gray);
+    padding: 20px 30px;
+    border-top: 1px solid var(--border-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#articleEntryModal .modal-footer .btn-primary,
+#articleEditModal .modal-footer .btn-primary {
+    background-color: var(--top-blue);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+#articleEntryModal .modal-footer .btn-primary:hover,
+#articleEditModal .modal-footer .btn-primary:hover {
+    background-color: #4a7bb7;
+}
