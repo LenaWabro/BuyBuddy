@@ -28,23 +28,20 @@
     <h1 class="text-center">BuyBuddy</h1>
     -->
 
-<div class="row">
+<div class="main-content">
     <!-- Listenbereich -->
-    <div class="col-lg-3" id="list-view">
+    <div id="list-view">
         <h4>Listenübersicht</h4>
         <div id="list-container" class="list-group"></div>
         <button class="btn btn-outline-primary" id="add-list">Neue Liste erstellen</button>
-
-
     </div>
-
-
-    <div class="col-lg-9" id="detail-view">
+    <!-- Detailbereich -->
+    <div id="detail-view">
         <h4>Details zur Liste</h4>
-        <!-- Hier wird die data-currentListId gesetzt -->
         <div id="detail-container" data-currentListId="1"></div>
     </div>
 </div>
+
 
 
 <!-- Modal für die Artikelübersicht -->
@@ -68,12 +65,12 @@
                         <option value="Milchprodukt">Milchprodukte</option>
                         <option value="Backware">Backwaren</option>
                     </select>
-                    <button class="btn btn-outline-secondary" id="openTagManagement">Tags verwalten</button>
+                    <button class="btn btn-outline-success" id="openTagManagement">Tags verwalten</button>
                 </div>
                 <ul id="articleList" class="list-group"></ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addToListBtn">Zur Liste
                     hinzufügen
 
@@ -83,7 +80,7 @@
                     <a>Gewünschter Artikel nicht gefunden?</a>
                 </div>
 
-                <button class="btn btn-warning" id="add-article-entry" data-bs-toggle="modal"
+                <button class="btn btn-primary" id="add-article-entry" data-bs-toggle="modal"
                         data-bs-target="#articleEntryModal"> Neuen Artikeleintrag erstellen
                 </button>
             </div>
@@ -91,23 +88,25 @@
     </div>
 </div>
 
-<!-- Modal um Artikel hinzuzufgen -->
+<!-- Modal um Artikel hinzuzufügen -->
 <div class="modal fade" id="articleEntryModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
+            <!-- Header -->
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="bi bi-plus-circle"></i> Neuen Artikel hinzufügen
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-content">
+
+            <!-- Body (anstatt "modal-content") -->
+            <div class="modal-body">
                 <label for="articleEntryName">Name</label>
-                <input type="text" id="articleEntryName"/>
+                <input type="text" id="articleEntryName" />
 
                 <label for="articleEntryTag">Tag</label>
                 <select id="articleEntryTag" class="form-select">
-                    <!-- Hier kommen später die Tags aus der Artikelübersicht -->
                     <option value="">Wähle einen Tag</option>
                     <option value="Obst">Obst</option>
                     <option value="Gemüse">Gemüse</option>
@@ -116,39 +115,39 @@
                     <option value="new">Neuen Tag erstellen...</option>
                 </select>
 
-
                 <!-- Container für neues Tag-Eingabefeld (zuerst versteckt) -->
                 <div id="newTagContainer" style="display: none; margin-top: 10px;">
                     <input type="text" id="newTagInput" class="form-control" placeholder="Neuen Tag eingeben">
                     <button id="confirmNewTag" class="btn btn-primary mt-2">Hinzufügen</button>
                 </div>
 
-
                 <label for="articleEntryDescription">Beschreibung</label>
-                <input type="text" id="articleEntryDescription"/>
+                <input type="text" id="articleEntryDescription" />
 
                 <label for="articleEntryImage">Bild</label>
-                <input type="text" id="articleEntryImage" placeholder="Gib die URL des Bildes ein"/>
+                <input type="text" id="articleEntryImage" placeholder="Gib die URL des Bildes ein" />
 
-                <!-- Um das Bild anzuzeigen -->
+                <!-- Bildvorschau -->
                 <img id="articleImagePreview" src="" alt="Bildvorschau"
-                     style="max-width: 100px; max-height: 100px; display: none;"/>
+                     style="max-width: 100px; max-height: 100px; display: none;" />
             </div>
+
+            <!-- Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addArticleEntry">Eintrag
-                    hinzufügen
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="addArticleEntry">Eintrag hinzufügen
                 </button>
             </div>
         </div>
     </div>
 </div>
 
+
 <!-- Modal HTML-Beispiel -->
 <div class="modal fade" id="deleteListModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header delete">
                 <h5 class="modal-title" id="deleteListModalLabel">Liste löschen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -157,7 +156,7 @@
             </div>
             <div class="modal-footer">
                 <input type="hidden" id="deleteListId"/>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" id="confirmDeleteList" class="btn btn-danger">Löschen</button>
             </div>
         </div>
@@ -179,7 +178,7 @@
                 <input type="text" id="editListName" class="form-control">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-warning" id="saveEditList">Speichern</button>
             </div>
         </div>
@@ -199,7 +198,7 @@
                 <input type="text" id="newListName" class="form-control">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-primary" id="createList">Erstellen</button>
             </div>
         </div>
@@ -210,7 +209,7 @@
 <div class="modal fade" id="shareListModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header share">
                 <h5 class="modal-title">Liste teilen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -219,7 +218,7 @@
                 <input type="hidden" id="shareListId">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-primary" id="confirmShareList" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
@@ -230,7 +229,7 @@
 <div class="modal fade" id="articleEditModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header edit">
                 <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Artikel bearbeiten</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -268,7 +267,7 @@
                      style="max-width:100px; max-height:100px; display:none;">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <button type="button" class="btn btn-primary" id="saveEditArticle">Speichern</button>
             </div>
         </div>
@@ -287,7 +286,7 @@
                 <ul id="tagList" class="list-group"></ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Schließen</button>
             </div>
         </div>
     </div>
