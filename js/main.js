@@ -33,8 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     listView.showListOverview();
 });
 
-
-
+/**
+ * CSS
+ * Fügt einen sanften Scroll-Effekt hinzu,
+ * um bei einer Mausbewegung das Scrollen nach unten flüssig zu machen.
+ */
 let lastScrollPosition = 0;
 
 window.addEventListener('wheel', function (event) {

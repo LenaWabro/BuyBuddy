@@ -1,4 +1,4 @@
-// models/model.js
+
 import { User } from "./benutzerverwaltung.js";
 export class Model {
     constructor() {
